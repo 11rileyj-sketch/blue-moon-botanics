@@ -1,0 +1,133 @@
+{
+  "soil_mediums": {
+    "gid_chunky_mix": {
+      "display_name": "GID Chunky Mix",
+      "composition": ["orchid bark", "perlite", "coco husk", "potting soil"],
+      "drainage": "excellent",
+      "nutrient_retention": "low",
+      "water_frequency_modifier": "more frequent",
+      "ph_range": "5.5-6.5",
+      "fertilizer_notes": "Low nutrient retention due to chunky composition. Feed at half strength every 2-3 weeks during growing season. Bark and husk break down slowly adding minimal organic nutrition over time.",
+      "best_for": ["aroids", "epiphytes", "plants prone to root rot", "monsteras", "philodendrons"],
+      "avoid_for": ["succulents", "cacti", "drought tolerant species"]
+    },
+    "leca_pebbles": {
+      "display_name": "LECA Pebbles",
+      "composition": ["expanded clay aggregate"],
+      "drainage": "exceptional",
+      "nutrient_retention": "none",
+      "water_frequency_modifier": "semi-hydroponic reservoir based",
+      "ph_range": "6.0-7.0",
+      "fertilizer_notes": "LECA holds zero nutrients. Fertilizer must be added directly to reservoir water at quarter strength with every water change. Use a hydroponic nutrient solution for best results.",
+      "best_for": ["aroids", "pothos", "monsteras", "semi-hydroponic transition plants"],
+      "avoid_for": ["plants requiring dry periods", "succulents", "cacti"]
+    },
+    "peat_moss": {
+      "display_name": "Peat Moss",
+      "composition": ["decomposed sphagnum peat"],
+      "drainage": "moderate",
+      "nutrient_retention": "moderate to high",
+      "water_frequency_modifier": "less frequent",
+      "ph_range": "3.5-4.5",
+      "fertilizer_notes": "Acidic pH can lock out nutrients even when present. Use a balanced fertilizer with micronutrients at half strength monthly. Consider pH adjustment if plant shows deficiency symptoms.",
+      "best_for": ["acid loving plants", "blueberries", "seed starting"],
+      "avoid_for": ["alkaline preferring plants", "succulents", "plants needing sharp drainage"]
+    },
+    "sphagnum_moss": {
+      "display_name": "Sphagnum Moss",
+      "composition": ["live or dried sphagnum moss"],
+      "drainage": "good",
+      "nutrient_retention": "low to moderate",
+      "water_frequency_modifier": "monitor closely — holds moisture but dries fast on surface",
+      "ph_range": "3.5-5.0",
+      "fertilizer_notes": "Very low inherent nutrients. Feed at quarter to half strength every 2-3 weeks during active growth. Sphagnum can absorb and hold fertilizer salts so flush thoroughly every few months.",
+      "best_for": ["orchids", "carnivorous plants", "cuttings and propagation", "moisture loving epiphytes"],
+      "avoid_for": ["succulents", "drought tolerant species"]
+    },
+    "succulent_mix": {
+      "display_name": "Succulent Mix",
+      "composition": ["coarse sand", "perlite", "grit", "minimal organic matter"],
+      "drainage": "exceptional",
+      "nutrient_retention": "very low",
+      "water_frequency_modifier": "infrequent",
+      "ph_range": "6.0-7.0",
+      "fertilizer_notes": "Minimal nutrient retention by design. Feed sparingly at quarter strength once monthly during growing season only. Never fertilize during dormancy. Over-fertilizing succulents causes etiolation and root burn.",
+      "best_for": ["succulents", "cacti", "drought tolerant plants", "mediterranean herbs"],
+      "avoid_for": ["tropical foliage", "moisture loving plants", "ferns"]
+    },
+    "minerals": {
+      "display_name": "Minerals",
+      "composition": ["pumice", "perlite", "grit", "volcanic rock", "zeolite"],
+      "drainage": "excellent",
+      "nutrient_retention": "very low to none",
+      "water_frequency_modifier": "frequent but light",
+      "ph_range": "6.5-7.5",
+      "fertilizer_notes": "Inorganic mineral media holds virtually no nutrients. Regular feeding required at half strength every 2 weeks during growing season. Zeolite if present can hold some cation nutrients and release slowly.",
+      "best_for": ["bonsai", "alpine plants", "succulents", "plants needing exceptional drainage"],
+      "avoid_for": ["moisture loving tropicals", "ferns", "plants needing organic matter"]
+    },
+    "water": {
+      "display_name": "Water",
+      "composition": ["water"],
+      "drainage": "n/a — full hydroponic",
+      "nutrient_retention": "none",
+      "water_frequency_modifier": "continuous — reservoir based",
+      "ph_range": "5.5-6.5",
+      "fertilizer_notes": "Full hydroponic setup — all nutrition must come from nutrient solution. Use a complete hydroponic fertilizer with macro and micronutrients at manufacturer recommended concentration. Monitor pH closely as it drifts in water. Change reservoir fully every 1-2 weeks to prevent salt buildup and pathogen growth.",
+      "best_for": ["pothos", "philodendrons", "lucky bamboo", "plants transitioning to hydroponics"],
+      "avoid_for": ["succulents", "cacti", "plants requiring dry periods", "root rot prone species without monitoring"]
+    },
+    "coco_coir": {
+      "display_name": "Coco Coir",
+      "composition": ["coconut husk fiber"],
+      "drainage": "good",
+      "nutrient_retention": "low to moderate",
+      "water_frequency_modifier": "moderate — dries more evenly than peat",
+      "ph_range": "5.8-6.8",
+      "fertilizer_notes": "pH neutral and sustainable alternative to peat. Naturally low in nutrients so regular feeding required. Feed at half strength every 2 weeks during growing season. Coir can bind calcium and magnesium so consider a Cal-Mag supplement especially under LED lighting.",
+      "best_for": ["tropical foliage", "aroids", "seed starting", "cuttings", "general houseplants"],
+      "avoid_for": ["cacti", "succulents", "plants requiring very dry conditions"]
+    },
+    "potting_soil": {
+      "display_name": "Potting Soil",
+      "composition": ["peat or coco coir base", "perlite", "fertilizer charge", "wetting agents"],
+      "drainage": "moderate",
+      "nutrient_retention": "moderate to high",
+      "water_frequency_modifier": "standard — allow top inch to dry between waterings",
+      "ph_range": "6.0-7.0",
+      "fertilizer_notes": "Most commercial potting soils include a fertilizer charge lasting 3-6 months. Do not fertilize newly potted plants for the first 3 months. After charge depletes feed at half strength monthly during growing season. Watch for salt buildup — flush thoroughly every 3 months.",
+      "best_for": ["general houseplants", "tropical foliage", "herbs", "vegetables"],
+      "avoid_for": ["orchids", "succulents", "cacti", "plants requiring exceptional drainage"]
+    },
+    "potting_soil+perlite": {
+      "display_name": "Potting Soil + Perlite",
+      "notes": "The most common drainage amendment. Perlite opens up the potting soil structure, improving aeration and preventing compaction. Reduces moisture retention compared to straight potting soil. A common ratio is 3:1 soil to perlite for tropical foliage, or 1:1 for plants needing sharper drainage.",
+      "water_frequency_modifier": "slightly more frequent than potting soil alone",
+      "fertilizer_notes": "The fertilizer charge in commercial potting soil still applies — do not fertilize for the first 3 months after potting. After charge depletes, feed at half strength every 2-3 weeks during growing season. Perlite dilutes nutrient retention slightly so lean toward the more frequent end of the feeding window."
+    },
+    "coco_coir+perlite": {
+      "display_name": "Coco Coir + Perlite",
+      "notes": "Popular DIY aroid mix and a sustainable peat-free alternative. Coco coir provides moisture retention and structure while perlite adds drainage and aeration. A common ratio is 2:1 coir to perlite. Widely used in the aroid and tropical houseplant community.",
+      "water_frequency_modifier": "moderate — dries more evenly than soil-based mixes",
+      "fertilizer_notes": "No fertilizer charge — begin feeding immediately. Feed at half strength every 2 weeks during growing season. Coco coir can bind calcium and magnesium so a Cal-Mag supplement is recommended, especially under LED lighting. pH neutral so no adjustment typically needed."
+    },
+    "potting_soil+coco_coir": {
+      "display_name": "Potting Soil + Coco Coir",
+      "notes": "Balanced moisture retention mix popular for tropical foliage. Coco coir lightens the potting soil, improves aeration, and reduces compaction over time. A common ratio is 1:1. More forgiving than chunky mixes — good for plants that prefer consistent moisture.",
+      "water_frequency_modifier": "moderate — similar to potting soil but dries more evenly",
+      "fertilizer_notes": "Partial fertilizer charge from the potting soil component. Hold off on feeding for 6-8 weeks after potting, then begin at half strength monthly. The coco coir component may bind calcium and magnesium over time — watch for deficiency symptoms and supplement with Cal-Mag if needed."
+    },
+    "orchid_bark+sphagnum_moss": {
+      "display_name": "Orchid Bark + Sphagnum Moss",
+      "notes": "Classic epiphyte mix that mimics natural growing conditions for orchids and moisture-loving epiphytes. Bark provides chunky drainage and airflow around roots while sphagnum retains moisture between waterings. Common ratio is 3:1 bark to moss for orchids, or 1:1 for more moisture-loving species.",
+      "water_frequency_modifier": "monitor closely — bark dries faster than moss, water when bark is dry but moss is barely damp",
+      "fertilizer_notes": "Very low nutrient retention overall. Feed at quarter to half strength every 2-3 weeks during active growth. Flush thoroughly every 1-2 months to prevent salt buildup in the sphagnum. Use a balanced orchid fertilizer or general purpose at half strength."
+    },
+    "leca_pebbles+sphagnum_moss": {
+      "display_name": "LECA Pebbles + Sphagnum Moss",
+      "notes": "A hybrid semi-hydroponic medium that balances LECA's exceptional drainage and root aeration with sphagnum moss's moisture retention. LECA provides structural stability and airflow while the moss buffers the root zone against rapid drying — making this an excellent medium for propagation, transitioning plants from soil, and aroids that benefit from semi-hydroponic conditions without a full reservoir setup. Common ratio is 2:1 LECA to sphagnum or layered with moss surrounding the root ball.",
+      "water_frequency_modifier": "monitor closely — LECA wicks efficiently but sphagnum dries faster on the surface than it appears; check reservoir or moisture level every 3-5 days",
+      "fertilizer_notes": "Near-zero inherent nutrients — begin feeding immediately after potting. Use a balanced hydroponic or liquid fertilizer at quarter to half strength with every watering. Sphagnum can trap fertilizer salts over time so flush thoroughly every 4-6 weeks. Monitor pH and keep between 5.5 and 6.5 for tropical houseplants."
+}
+  }
+    }

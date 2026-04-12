@@ -1,0 +1,28 @@
+Prompt: > A professional, emblem-style botanical badge logo for 'Blue Moon Botanics', based on the composition and locked elements of bmb_logo.jpg.
+
+The Locked Border (Reference bmb_border_ref.jpg): >
+The intricate Kelly Green Art Nouveau border frame, with its leaf-fan corners, stylized flower buds, and Moonlight Silver metallic accents on the structural nodes, is an exact replicate of the geometry and color seen in image_23.png. All watermarks are removed. The entire central unit fits snugly and powerfully within the border edges.
+
+The Redefined B-Moon Icon (Centered Top): >
+Inside the upper part of the frame, a single stylized capital letter 'B' constructed from two distinct stacked crescent moons. The asymmetrical composition is preserved: the upper crescent moon (top bowl) is slightly larger and wider in scale than the dominant lower crescent moon. Both crescent tips face right.
+
+The Spine Edge Refinement (Reference bmb_b_proto.png )(Bar Removal): >
+The prominent, outlined vertical bar previously seen on the leftmost spine (the component labeled 'proto' bar) has been deleted. The leftmost edge of the combined moon shapes (their spines) is now a singular, strict, perfectly vertical and linear line, forming the solid spine of the capital 'B' form without a separate, visible bar structure. The edge is clean and integrated.
+
+Pattern Fill (Texture Swap): >
+The previous Marble Pothos variegation pattern is scrapped. The main body of both moons is now filled with a distinct, high-saturation zebra plant leaf pattern (Calathea zebrina). This pattern consists of bold, alternate deep Kelly Green (#339c5e) and light silver/cream bands. The pattern strictly uses only Kelly Green (#339c5e), Brilliant Pure White, and Shiny Metallic Moonlight Silver (#cecece). The stripes follow the B-Moon curves. The interior negative space crescent 'cut-outs' remain solid, opaque white.
+
+The Unified Outline Treatment: >
+Both the scaled-up text block and the entire combined silhouette of the redefined B-Moon icon feature the exact same triple-layer halo outline treatment: Kelly Green fill, crisp white inner-stroke, and Moonlight Silver metallic outer-stroke.
+
+The Locked Typography (Centered Bottom): >
+Below the icon, the text 'Blue Moon' is large and dominant, with 'Botanics' centered and proportional below it, in the exact Art Nouveau font and layout from bmb_font_ref.png, complete with the matching halo outline.
+
+Aesthetic & Style: > Minimalist Art Nouveau/Maker Hybrid. Flat vector design with subtle metallic sheens and realistic textures. Colors: Deep Kelly Green, Brilliant Pure White, Shiny Metallic Moonlight Silver. Pure white background.
+
+Tinkerer’s Evaluating & Pre-Flight
+This prompt focuses your feedback surgically.
+
+Bar Removal: The instruction explicitly mentions deleting the "proto bar" and making the edge a "singular, strict, perfectly vertical and linear line... without a separate, visible bar structure," which unifies the form while preserving the 'B' geometry.
+
+Texture Swap: By explicitly mentioning the Calathea zebrina (zebra plant) and describing its specific texture pattern, the generator has a clear, recognizable new blueprint to follow, rather than just "another variegated plant."

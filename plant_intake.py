@@ -5,7 +5,6 @@ import os
 import ctypes
 from urllib.parse import quote
 from google import genai
-import config
 
 # --- 1. SET UP CLIENTS & CONSTANTS ---
 client = genai.Client(api_key=config.GEMINI_API_KEY)

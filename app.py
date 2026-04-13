@@ -24,6 +24,20 @@ st.markdown("""
       color: #e8e4dc;
   }
 
+  /* Hex tile background — ivory tiles, Kelly green grout */
+  body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: -1;
+      opacity: 0.18;
+      background-color: #0f140f;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 0 L56 16 L56 50 L28 66 L0 50 L0 16 Z' fill='none' stroke='%234CBB17' stroke-width='1.5'/%3E%3Cpath d='M28 66 L56 50 L56 84 L28 100 L0 84 L0 50 Z' fill='none' stroke='%234CBB17' stroke-width='1.5'/%3E%3Cpath d='M28 0 L56 16 L56 50 L28 66 L0 50 L0 16 Z' fill='%23F8F4E8' fill-opacity='0.07'/%3E%3Cpath d='M28 66 L56 50 L56 84 L28 100 L0 84 L0 50 Z' fill='%23F8F4E8' fill-opacity='0.07'/%3E%3C/svg%3E");
+      background-size: 56px 100px;
+  }
+
   #MainMenu, footer, header { visibility: hidden; }
   .block-container { padding-top: 2rem; padding-bottom: 3rem; max-width: 720px; }
 
@@ -449,13 +463,27 @@ with tab_june:
 # ══════════════════════════════════════════════════════════════════════════════
 with tab_manual:
 
+    # ── Who's adding this plant? ──────────────────────────────────────────────
+    intake_users = fetch_beta_users()
+    if intake_users:
+        intake_user = st.selectbox(
+            "Who's adding this plant?",
+            options=intake_users,
+            key="intake_user"
+        )
+    else:
+        intake_user = "Justin"
+
+    st.markdown("<div style='margin-top:0.8rem'></div>", unsafe_allow_html=True)
+
     plant_name = st.text_input(
         "Plant Name",
         placeholder="e.g. Neon Pothos, Monstera, Fishbone Prayer Plant",
         key="plant_name_input"
     )
     st.markdown(
-        '<div class="input-helper">Enter whatever you know — common name, cultivar, or both.</div>',
+        '<div class="input-helper">The more specific you are, the better. '
+        '"Neon Pothos" will get you a more accurate match than "Pothos" alone.</div>',
         unsafe_allow_html=True
     )
 
@@ -495,6 +523,8 @@ with tab_manual:
     if run_mode and plant_name.strip():
         with st.spinner(f"Looking up {plant_name}..."):
             payload, log = run_intake(plant_name.strip(), location, mode=run_mode)
+            if payload:
+                payload["beta_user"] = intake_user
 
         with st.expander("intake log", expanded=False):
             log_html = "".join(f'<div class="log-line">{line}</div>' for line in log)

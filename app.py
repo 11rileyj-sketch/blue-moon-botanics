@@ -323,29 +323,33 @@ def airtable_headers():
         "Content-Type": "application/json"
     }
 
+BETA_USERS_TABLE = "Beta Users"
+
 def fetch_beta_users():
-    """Returns sorted list of distinct Beta User values from Specimen Registry."""
-    url    = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{urllib.parse.quote(SPECIMEN_TABLE)}"
-    params = {"fields[]": "Beta User", "pageSize": 100}
+    """Returns sorted list of user names from the Beta Users table."""
+    url    = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{urllib.parse.quote(BETA_USERS_TABLE)}"
+    params = {"fields[]": "Name", "pageSize": 100}
     try:
         r = requests.get(url, headers=airtable_headers(), params=params)
         if r.status_code != 200:
             st.session_state["_beta_user_error"] = f"Airtable {r.status_code}: {r.text[:120]}"
             return []
-        users = set()
+        users = []
         for rec in r.json().get("records", []):
-            val = rec.get("fields", {}).get("Beta User")
-            if val:
-                users.add(val)
-        return sorted(list(users))
+            name = rec.get("fields", {}).get("Name")
+            if name:
+                users.append(name)
+        return sorted(users)
     except Exception as e:
         st.session_state["_beta_user_error"] = str(e)
         return []
 
 def fetch_collection(beta_user):
-    """Returns all Specimen Registry records for the given Beta User."""
+    """Returns all Specimen Registry records for the given Beta User (linked record field)."""
     url    = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{urllib.parse.quote(SPECIMEN_TABLE)}"
-    params = {"filterByFormula": f"{{Beta User}}='{beta_user}'", "pageSize": 100}
+    # Linked record fields require FIND() to match by name
+    formula = f"FIND('{beta_user}', {{Beta User}})"
+    params = {"filterByFormula": formula, "pageSize": 100}
     try:
         r = requests.get(url, headers=airtable_headers(), params=params)
         return r.json().get("records", [])

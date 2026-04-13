@@ -1,3 +1,4 @@
+# app.py v1.1.0
 import streamlit as st
 import os
 import json
@@ -327,14 +328,18 @@ def fetch_beta_users():
     url    = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{urllib.parse.quote(SPECIMEN_TABLE)}"
     params = {"fields[]": "Beta User", "pageSize": 100}
     try:
-        r     = requests.get(url, headers=airtable_headers(), params=params)
+        r = requests.get(url, headers=airtable_headers(), params=params)
+        if r.status_code != 200:
+            st.session_state["_beta_user_error"] = f"Airtable {r.status_code}: {r.text[:120]}"
+            return []
         users = set()
         for rec in r.json().get("records", []):
             val = rec.get("fields", {}).get("Beta User")
             if val:
                 users.add(val)
         return sorted(list(users))
-    except:
+    except Exception as e:
+        st.session_state["_beta_user_error"] = str(e)
         return []
 
 def fetch_collection(beta_user):
@@ -463,6 +468,12 @@ with tab_manual:
 
     # ── Who's adding this plant? ──────────────────────────────────────────────
     intake_users = fetch_beta_users()
+    if st.session_state.get("_beta_user_error"):
+        st.markdown(
+            f'<div class="warn-box">⚠️ Could not load user list from Airtable: '
+            f'{st.session_state["_beta_user_error"]}</div>',
+            unsafe_allow_html=True
+        )
     if intake_users:
         intake_user = st.selectbox(
             "Who's adding this plant?",
@@ -520,7 +531,7 @@ with tab_manual:
 
     if run_mode and plant_name.strip():
         with st.spinner(f"Looking up {plant_name}..."):
-            payload, log = run_intake(plant_name.strip(), location, mode=run_mode)
+            payload, log = run_intake(plant_name.strip(), location, mode=run_mode, beta_user=intake_user)
             if payload:
                 payload["beta_user"] = intake_user
 
@@ -582,20 +593,22 @@ with tab_collection:
 
                 for record in records:
                     f = record.get("fields", {})
+                    # Field names matched to actual Specimen Registry schema
+                    species_raw = f.get("Species", "")
                     card_payload = {
-                        "common_name":         f.get("Common Name", "Unknown Plant"),
-                        "scientific_name":     f.get("Scientific Name", ""),
-                        "cultivar":            f.get("Cultivar", ""),
-                        "care_summary":        f.get("Care Summary", ""),
-                        "care_notes":          f.get("Care Notes", ""),
-                        "sun":                 f.get("Sun", "☀️"),
-                        "water":               f.get("Water", "💧"),
-                        "cycle":               f.get("Cycle", ""),
-                        "photo_url":           f.get("Photo URL", ""),
+                        "common_name":         f.get("Nickname") or species_raw or "Unknown Plant",
+                        "scientific_name":     species_raw,
+                        "cultivar":            "",
+                        "care_summary":        f.get("History", ""),
+                        "care_notes":          f.get("Fertilizer Recommendation Detail", ""),
+                        "sun":                 f.get("Lighting", ""),
+                        "water":               "",
+                        "cycle":               f.get("Plant Age", ""),
+                        "photo_url":           f.get("Specimen Photo", ""),
                         "fertilizer_baseline": f.get("Fertilizer Baseline", ""),
-                        "local_authority":     f.get("Local Authority", ""),
-                        "expert_link":         f.get("Expert Link", ""),
-                        "flowering":           f.get("Flowering", False),
+                        "local_authority":     "",
+                        "expert_link":         "",
+                        "flowering":           False,
                     }
                     common = card_payload["common_name"]
                     with st.expander(f"🌿 {common}", expanded=False):

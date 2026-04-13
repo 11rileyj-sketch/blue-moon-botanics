@@ -464,7 +464,7 @@ def get_plant_image(plant_name, common_name, scientific_name, log=None):
     return PLACEHOLDER_PHOTO
 
 # --- 11. INTAKE LOGIC ---
-def run_intake(plant_name, location, mode='full'):
+def run_intake(plant_name, location, mode='full', beta_user="Justin"):
     """
     Core intake pipeline.
 
@@ -503,6 +503,7 @@ def run_intake(plant_name, location, mode='full'):
             if record_id:
                 store_record_id(plant_name, record_id, log)
                 cached['airtable_record_id'] = record_id
+        cached['beta_user'] = beta_user
 
         serper_name  = cached.get('input_name', plant_name)
         img_url      = get_plant_image(serper_name, cached.get('common_name'),
@@ -520,6 +521,7 @@ def run_intake(plant_name, location, mode='full'):
             _log(f"   ✅ Link still valid: {revalidated}", log)
 
         cached['airtable_record_id'] = record_id
+        cached['beta_user'] = beta_user
         save_to_cache(plant_name, cached)
 
         _log(f"🚀 Firing updated webhook...", log)
@@ -709,7 +711,8 @@ search URL rather than inventing a path.
             "script_version":    SCRIPT_VERSION,
             "input_name":        plant_name,
             "raw_json":          raw_text,
-            "airtable_record_id": ""
+            "airtable_record_id": "",
+            "beta_user":          beta_user
         }
 
         save_to_cache(plant_name, payload)

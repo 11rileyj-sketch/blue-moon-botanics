@@ -598,7 +598,8 @@ with tab_collection:
                 for record in records:
                     f = record.get("fields", {})
                     # Field names matched to actual Specimen Registry schema
-                    species_raw = f.get("Species", "")
+                    species_raw_val = f.get("Species", "")
+                    species_raw = species_raw_val if isinstance(species_raw_val, str) else ""
                     card_payload = {
                         "common_name":         f.get("Nickname") or species_raw or "Unknown Plant",
                         "scientific_name":     species_raw,
@@ -608,7 +609,7 @@ with tab_collection:
                         "sun":                 f.get("Lighting", ""),
                         "water":               "",
                         "cycle":               f.get("Plant Age", ""),
-                        "photo_url":           f.get("Specimen Photo", ""),
+                        "photo_url":           (f.get("Specimen Photo") or [{}])[0].get("url", ""),
                         "fertilizer_baseline": f.get("Fertilizer Baseline", ""),
                         "local_authority":     "",
                         "expert_link":         "",

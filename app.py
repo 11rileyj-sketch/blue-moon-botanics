@@ -51,6 +51,15 @@ st.markdown(f"""
       background-repeat: repeat;
   }}
 
+  header[data-testid="stHeader"] {{
+      display: none;
+  }}
+
+  .stTabs [data-baseweb="tab"] {{
+      color: #ffffff;
+      font-weight: 500;
+  }}
+
   .log-line {{
       font-family: 'Courier New', monospace;
       font-size: 0.85rem;

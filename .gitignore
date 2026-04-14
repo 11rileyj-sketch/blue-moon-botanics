@@ -4,3 +4,4 @@ plant_cache.json
 __pycache__/
 .venv/
 *.pyc
+test_cse.py

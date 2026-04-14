@@ -1,4 +1,4 @@
-# app.py — v1.2.0
+# app.py — v1.2.1
 import streamlit as st
 import os
 import json
@@ -7,25 +7,9 @@ import urllib.parse
 import base64
 import random
 from plant_intake import run_intake, load_manifest, load_cache
+from assets import get_bg_base64
 
 # ─── HELPER FUNCTIONS ─────────────────────────────────────────────────────────
-
-@st.cache_data
-def get_bg_base64(file_path="bg_tile.png"):
-    """
-    Checks for a local image file to encode. 
-    If not found, it uses the hardcoded fallback string.
-    """
-    # PASTE YOUR ORIGINAL GIANT BASE64 STRING BETWEEN THE QUOTES BELOW:
-    FALLBACK_BG = "PASTE_YOUR_LONG_STRING_HERE"
-    
-    try:
-        if os.path.exists(file_path):
-            with open(file_path, "rb") as f:
-                return base64.b64encode(f.read()).decode()
-    except Exception:
-        pass
-    return FALLBACK_BG
 
 def get_config(key):
     """Fallback config fetcher for local/Railway parity."""

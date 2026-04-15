@@ -565,6 +565,7 @@ with tab_manual:
 with tab_collection:
 
     beta_users = fetch_beta_users()
+    st.write(dict(st.session_state))
 
     if not beta_users:
         st.markdown(

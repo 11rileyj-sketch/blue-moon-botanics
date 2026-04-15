@@ -574,11 +574,12 @@ with tab_collection:
             unsafe_allow_html=True
         )
     else:
+        if st.session_state.get("intake_user") in beta_users:
+            st.session_state["collection_user"] = st.session_state["intake_user"]
         selected_user = st.selectbox(
             "Whose collection?",
             options=beta_users,
-            key="collection_user",
-            index=beta_users.index(st.session_state.get("intake_user", beta_users[0])) if st.session_state.get("intake_user") in beta_users else 0
+            key="collection_user"
         )
 
         if selected_user:

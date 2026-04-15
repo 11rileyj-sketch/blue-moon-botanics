@@ -482,8 +482,10 @@ with tab_manual:
         intake_user = st.selectbox(
             "Who's adding this plant?",
             options=intake_users,
-            key="intake_user"
+            key="intake_user",
+            index=intake_users.index(st.session_state.get("active_user", intake_users[0])) if intake_users else 0
         )
+        st.session_state["active_user"] = intake_user
     else:
         intake_user = "Justin"
 
@@ -574,7 +576,8 @@ with tab_collection:
         selected_user = st.selectbox(
             "Whose collection?",
             options=beta_users,
-            key="collection_user"
+            key="collection_user",
+            index=beta_users.index(st.session_state.get("active_user", beta_users[0])) if beta_users else 0
         )
 
         if selected_user:

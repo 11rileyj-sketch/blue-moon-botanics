@@ -5,6 +5,7 @@ import os
 import sys
 import platform
 from urllib.parse import quote
+from image_search import get_plant_image, build_wsrv_url, search_serper_images, search_wikimedia_images
 from google import genai
 
 # --- ENV-AWARE CONFIG ---
@@ -165,17 +166,6 @@ def build_variety_query(common_name, scientific_name):
 
     base_scientific = " ".join(scientific_name.split()[:2]).replace("'", "").strip()
     return f"{base_scientific} {' '.join(found_descriptors)}"
-
-def build_wsrv_url(img_url):
-    """
-    Safely builds a wsrv.nl proxy URL with proper encoding of the source URL.
-    Skips wsrv for CDN transformation URLs that don't need proxying.
-    """
-    skip_domains = ['thespruce.com', 'thdstatic.com', 'shopify.com', 'squarespace.com']
-    if any(domain in img_url for domain in skip_domains):
-        return img_url
-    encoded = quote(img_url, safe='')
-    return f"https://wsrv.nl/?url={encoded}&w=800&h=800&fit=cover"
 
 def parse_record_id(response_text):
     """
@@ -382,86 +372,7 @@ def fetch_airtable_record_id(common_name, log=None):
         _log(f"   ⚠️ Airtable lookup failed: {e}", log)
         return None
 
-# --- 9. SERPER IMAGE SEARCH ---
-def search_serper_images(query, log=None):
-    """Searches Google Images via Serper.dev for a plant image."""
-    try:
-        url     = "https://google.serper.dev/images"
-        headers = {
-            "X-API-KEY":    SERPER_API_KEY,
-            "Content-Type": "application/json"
-        }
-        payload = {"q": query, "num": 10}
-        r       = requests.post(url, headers=headers, json=payload)
-        data    = r.json()
-        images  = data.get('images', [])
-        if images:
-            img_url = images[0].get('imageUrl')
-            _log(f"   Serper query: '{query}' → found: {img_url}", log)
-            return img_url
-        else:
-            _log(f"   Serper query: '{query}' → no results", log)
-            return None
-    except Exception as e:
-        _log(f"   Serper error: {e}", log)
-        return None
 
-# --- 9b. WIKIMEDIA COMMONS IMAGE SEARCH ---
-def search_wikimedia_images(query, log=None):
-    """Searches Wikimedia Commons for a plant image by scientific or common name."""
-    try:
-        url    = "https://en.wikipedia.org/w/api.php"
-        params = {
-            "action":     "query",
-            "titles":     query,
-            "prop":       "pageimages",
-            "format":     "json",
-            "pithumbsize": 800,
-            "redirects":  1
-        }
-        r    = requests.get(url, params=params,
-                            headers={"User-Agent": "BlueMoonProjects-PlantIntake/2.7"})
-        data = r.json()
-        pages = data.get("query", {}).get("pages", {})
-        for page in pages.values():
-            thumb = page.get("thumbnail", {}).get("source")
-            if thumb:
-                _log(f"   Wikimedia query: '{query}' → found: {thumb}", log)
-                return thumb
-        _log(f"   Wikimedia query: '{query}' → no results", log)
-        return None
-    except Exception as e:
-        _log(f"   Wikimedia error: {e}", log)
-        return None
-
-# --- 10. PHOTO FETCHING ---
-def get_plant_image(plant_name, common_name, scientific_name, log=None):
-    """
-    Search order:
-    0. Serper    — raw plant_name input (best results, decoupled from scientific name)
-    1. Wikimedia — scientific name (reliable, attribution-friendly)
-    2. Wikimedia — common name fallback
-    3. Placeholder
-    """
-    base_name = " ".join(scientific_name.replace("'", "").split()[:2]).strip()
-
-    _log(f"   🔍 Trying Serper: '{plant_name} houseplant'", log)
-    img = search_serper_images(f"{plant_name} houseplant", log)
-    if img:
-        return img
-
-    _log(f"   🔍 Trying Wikimedia: '{base_name}'", log)
-    img = search_wikimedia_images(base_name, log)
-    if img:
-        return img
-
-    _log(f"   🔍 Trying Wikimedia: '{common_name}'", log)
-    img = search_wikimedia_images(common_name, log)
-    if img:
-        return img
-
-    _log(f"   ⚠️ No photo found. Using placeholder.", log)
-    return PLACEHOLDER_PHOTO
 
 # --- 11. INTAKE LOGIC ---
 def run_intake(plant_name, location, mode='full', beta_user="Justin"):

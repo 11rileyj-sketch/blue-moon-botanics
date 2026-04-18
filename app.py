@@ -8,6 +8,7 @@ import base64
 import random
 from plant_intake import run_intake, load_manifest, load_cache
 from assets import get_bg_base64
+from image_search import get_plant_image, build_wsrv_url
 
 # ─── PAGE CONFIG ──────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -393,7 +394,25 @@ def fetch_species(common_name):
             return records[0].get("fields", {})
         return {}
     except:
-        return {}    
+        return {}
+
+def update_specimen_photo(record_id, plant_name, common_name, scientific_name):
+    """Runs image search and PATCHes the Specimen Registry record with the new photo URL."""
+    img_url = get_plant_image(plant_name, common_name, scientific_name)
+    if not img_url or img_url == "https://www.vecteezy.com/free-vector/potted-plant-silhouette":
+        return None
+    photo_url = build_wsrv_url(img_url)
+    url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{urllib.parse.quote(SPECIMEN_TABLE)}/{record_id}"
+    body = {"fields": {"Specimen Photo": [{"url": photo_url}]}}
+    try:
+        r = requests.patch(url, headers=airtable_headers(), json=body)
+        if r.status_code == 200:
+            return photo_url
+        return None
+    except:
+        return None
+    
+    
 
 # ─── SHARED CARD RENDERER ─────────────────────────────────────────────────────
 def inject_emojis(care_notes, sun, water):
@@ -666,4 +685,19 @@ with tab_collection:
                         "flowering":           sp.get("Flowering", False),
                     }
                     with st.expander(f"🌿 {common}", expanded=False):
-                        render_result_card(card_payload, show_added_confirm=False)
+                        col_photo_btn, _ = st.columns([1, 3])
+                        with col_photo_btn:
+                            if st.button("📷 Update Photo", key=f"photo_{record['id']}"):
+                                with st.spinner("Searching for a photo..."):
+                                    new_url = update_specimen_photo(
+                                        record["id"],
+                                        f.get("Species", common),
+                                        common,
+                                        card_payload["scientific_name"]
+                                    )
+                                if new_url:
+                                    card_payload["photo_url"] = new_url
+                                    st.success("Photo updated!")
+                                else:
+                                    st.warning("Couldn't find a photo. Try again or rerun intake.")
+                                render_result_card(card_payload, show_added_confirm=False)

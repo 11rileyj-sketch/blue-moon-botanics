@@ -375,7 +375,7 @@ def inject_emojis(care_notes, sun, water):
         out.append(line)
     return '<br>'.join(out)
 
-def render_result_card(payload, show_added_confirm=False):
+def render_result_card(payload, show_added_confirm=False, compact=False):
     """Renders the full plant care card. Used by both Manual Entry and My Collection."""
     common_name  = payload.get("common_name", "")
     scientific   = payload.get("scientific_name", "")
@@ -416,26 +416,33 @@ def render_result_card(payload, show_added_confirm=False):
 
     st.markdown('<hr>', unsafe_allow_html=True)
 
-    if care_summary:
-        st.markdown(f'<div class="result-summary">{care_summary}</div>', unsafe_allow_html=True)
+    if not compact:
+        if care_summary:
+            st.markdown(f'<div class="result-summary">{care_summary}</div>', unsafe_allow_html=True)
 
-    if care_notes:
-        notes_html = inject_emojis(care_notes, sun, water)
-        st.markdown(f'<div class="care-notes">{notes_html}</div>', unsafe_allow_html=True)
+        if care_notes:
+            notes_html = inject_emojis(care_notes, sun, water)
+            st.markdown(f'<div class="care-notes">{notes_html}</div>', unsafe_allow_html=True)
 
-    if fert:
-        st.markdown(f"""
-        <div class="fert-box">
-          <div class="fert-baseline">🧪 <strong>Fertilizer baseline:</strong> {fert}</div>
-          <div class="fert-coming-soon">✨ Personalized recommendations based on your plant's age,
-          potting medium, and location in your home — coming soon.</div>
-        </div>
-        """, unsafe_allow_html=True)
+        if fert:
+            st.markdown(f"""
+            <div class="fert-box">
+              <div class="fert-baseline">🧪 <strong>Fertilizer baseline:</strong> {fert}</div>
+              <div class="fert-coming-soon">✨ Personalized recommendations based on your plant's age,
+              potting medium, and location in your home — coming soon.</div>
+            </div>
+            """, unsafe_allow_html=True)
 
-    if expert_link and authority:
+        if expert_link and authority:
+            st.markdown(
+                f'<div class="authority-link">📚 Source: '
+                f'<a href="{expert_link}" target="_blank">{authority}</a></div>',
+                unsafe_allow_html=True
+            )
+    else:
         st.markdown(
-            f'<div class="authority-link">📚 Source: '
-            f'<a href="{expert_link}" target="_blank">{authority}</a></div>',
+            f'<div class="authority-link" style="margin-top:0.4rem;">🌿 Head to '
+            f'<strong>My Collection</strong> for full care tips on {common_name}.</div>',
             unsafe_allow_html=True
         )
 
@@ -546,7 +553,7 @@ with tab_manual:
             st.markdown(log_html, unsafe_allow_html=True)
 
         if payload:
-            render_result_card(payload, show_added_confirm=True)
+            render_result_card(payload, show_added_confirm=True, compact=True)
         else:
             st.markdown(
                 '<div class="error-box">❌ Intake failed. Check the log above for details.</div>',

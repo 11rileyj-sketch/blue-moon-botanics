@@ -654,7 +654,7 @@ with tab_collection:
                         "common_name":         common,
                         "scientific_name":     sp.get("Scientific Name", species_raw),
                         "cultivar":            sp.get("Cultivar", ""),
-                        "care_summary":        sp.get("Care Notes", ""),
+                        "care_summary":        "",
                         "care_notes":          sp.get("Care Notes", ""),
                         "sun":                 sp.get("Sunlight", f.get("Lighting", "")),
                         "water":               sp.get("Water", ""),

@@ -378,6 +378,22 @@ def fetch_collection(beta_user):
         return r.json().get("records", [])
     except:
         return []
+    
+SPECIES_TABLE = "Species Library"
+
+def fetch_species(common_name):
+    """Fetch care data from Species Library by Common Name."""
+    url     = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{urllib.parse.quote(SPECIES_TABLE)}"
+    formula = f"{{Common Name}} = '{common_name}'"
+    params  = {"filterByFormula": formula, "pageSize": 1}
+    try:
+        r = requests.get(url, headers=airtable_headers(), params=params)
+        records = r.json().get("records", [])
+        if records:
+            return records[0].get("fields", {})
+        return {}
+    except:
+        return {}    
 
 # ─── SHARED CARD RENDERER ─────────────────────────────────────────────────────
 def inject_emojis(care_notes, sun, water):
@@ -630,21 +646,24 @@ with tab_collection:
                     f = record.get("fields", {})
                     species_raw_val = f.get("Species", "")
                     species_raw = species_raw_val if isinstance(species_raw_val, str) else ""
+                    common = f.get("Nickname") or species_raw or "Unknown Plant"
+
+                    sp = fetch_species(common)
+
                     card_payload = {
-                        "common_name":         f.get("Nickname") or species_raw or "Unknown Plant",
-                        "scientific_name":     species_raw,
-                        "cultivar":            "",
-                        "care_summary":        f.get("History", ""),
-                        "care_notes":          f.get("Fertilizer Recommendation Detail", ""),
-                        "sun":                 f.get("Lighting", ""),
-                        "water":               "",
-                        "cycle":               f.get("Plant Age", ""),
+                        "common_name":         common,
+                        "scientific_name":     sp.get("Scientific Name", species_raw),
+                        "cultivar":            sp.get("Cultivar", ""),
+                        "care_summary":        sp.get("Care Notes", ""),
+                        "care_notes":          sp.get("Care Notes", ""),
+                        "sun":                 sp.get("Sunlight", f.get("Lighting", "")),
+                        "water":               sp.get("Water", ""),
+                        "cycle":               sp.get("Cycle", f.get("Plant Age", "")),
                         "photo_url":           (f.get("Specimen Photo") or [{}])[0].get("url", ""),
-                        "fertilizer_baseline": f.get("Fertilizer Baseline", ""),
-                        "local_authority":     "",
-                        "expert_link":         "",
-                        "flowering":           False,
+                        "fertilizer_baseline": sp.get("Fertilizer Baseline", f.get("Fertilizer Baseline", "")),
+                        "local_authority":     sp.get("Local Authority", ""),
+                        "expert_link":         sp.get("Expert Resource", ""),
+                        "flowering":           sp.get("Flowering", False),
                     }
-                    common = card_payload["common_name"]
                     with st.expander(f"🌿 {common}", expanded=False):
                         render_result_card(card_payload, show_added_confirm=False)

@@ -433,8 +433,6 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
         st.markdown(f'<div class="result-scientific">{scientific}</div>', unsafe_allow_html=True)
         st.markdown(f'<div class="stat-row">{pills_html}</div>', unsafe_allow_html=True)
 
-    st.markdown('<hr>', unsafe_allow_html=True)
-
     if not compact:
         if care_summary:
             st.markdown(f'<div class="result-summary">{care_summary}</div>', unsafe_allow_html=True)
@@ -465,6 +463,8 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
             f'🌿 See full care tips in My Collection</a></div>',
             unsafe_allow_html=True
         )
+
+    st.markdown('<hr>', unsafe_allow_html=True)
 
     if show_added_confirm:
         st.markdown(

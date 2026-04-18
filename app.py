@@ -119,6 +119,25 @@ st.markdown(f"""
       font-weight: 500;
   }}
 
+  .collection-nudge-btn {{
+      display: inline-block;
+      background-color: #4CBB17;
+      color: #ffffff !important;
+      border: none;
+      border-radius: 4px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.55rem 1.4rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 0.8rem;
+  }}
+  .collection-nudge-btn:hover {{ background-color: #3da012; }}
+
   .stButton > button {{
       background-color: #4CBB17;
       color: #ffffff;
@@ -441,8 +460,9 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
             )
     else:
         st.markdown(
-            f'<div class="authority-link" style="margin-top:0.4rem;">🌿 Head to '
-            f'<strong>My Collection</strong> for full care tips on {common_name}.</div>',
+            f'<div style="margin-top:0.6rem;">'
+            f'<a class="collection-nudge-btn" href="#">'
+            f'🌿 See full care tips in My Collection</a></div>',
             unsafe_allow_html=True
         )
 

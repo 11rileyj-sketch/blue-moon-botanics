@@ -385,7 +385,7 @@ SPECIES_TABLE = "Species Library"
 def fetch_species(common_name):
     """Fetch care data from Species Library by Common Name."""
     url     = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{urllib.parse.quote(SPECIES_TABLE)}"
-    formula = f"{{Common Name}} = '{common_name}'"
+    formula = f"LOWER({{Common Name}}) = '{common_name.lower()}'"
     params  = {"filterByFormula": formula, "pageSize": 1}
     try:
         r = requests.get(url, headers=airtable_headers(), params=params)

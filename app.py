@@ -349,9 +349,13 @@ st.markdown(f"""
   }}
 
   /* ── Camera icon button ──────────────────────────────────────── */
-  .camera-btn-wrap {{
-      text-align: center;
-      margin: 0.4rem 0 0.8rem;
+  .camera-btn-wrap .stButton > button {{
+      background-color: #4CBB17 !important;
+      color: #ffffff !important;
+      border: none !important;
+      font-size: 1.3rem !important;
+      line-height: 1 !important;
+      padding: 0.4rem !important;
   }}
   .camera-btn {{
       position: relative;
@@ -635,6 +639,7 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
             st.image(photo_url, use_container_width=True)
             record_id = payload.get("record_id")
             if record_id:
+                st.markdown('<div class="camera-btn-wrap">', unsafe_allow_html=True)
                 if st.button("📷", key=f"cam_{record_id}", help="Update Photo", use_container_width=True):
                     with st.spinner("Searching for a photo..."):
                         new_url = update_specimen_photo(
@@ -647,6 +652,7 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
                         st.success("Photo updated! Reload to see it.")
                     else:
                         st.warning("Couldn't find a photo. Try again or rerun intake.")
+                st.markdown('</div>', unsafe_allow_html=True)
         with col_info:
             st.markdown(f'<div class="result-common">{common_name}</div>', unsafe_allow_html=True)
             st.markdown(f'<div class="result-scientific">{scientific}</div>', unsafe_allow_html=True)

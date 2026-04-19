@@ -43,8 +43,10 @@ st.markdown(f"""
   .block-container {{
       background-color: rgba(252, 250, 245, 0.97) !important;
       border-radius: 12px !important;
-      padding: 80px 2.5rem 3rem !important;
+      padding: 20px 2.5rem 2.5rem !important;
       max-width: 740px;
+      margin-top: 80px !important;
+      margin-bottom: 80px !important;
       box-shadow: 0 2px 24px rgba(30,45,20,0.12);
   }}
 
@@ -54,7 +56,7 @@ st.markdown(f"""
       background-repeat: repeat;
       background-size: 400px auto;
       height: 80px;
-      margin: 0 -2.5rem;
+      margin: 0 -2.5rem 1.7rem;
   }}
 
   #MainMenu, footer, header {{ visibility: hidden; }}
@@ -63,17 +65,23 @@ st.markdown(f"""
   .bmb-header-card {{
       background-color: rgba(252, 250, 245, 0.97);
       border-radius: 12px;
-      border: 2px solid #4CBB17;
       box-shadow: 0 2px 24px rgba(30,45,20,0.12);
-      padding: 1.2rem 1.5rem 1rem;
+      padding: 0 1.5rem 0;
+      margin-top: 0;
       margin-bottom: 0;
       text-align: center;
   }}
-  .bmb-header-card img {{
+  .bmb-logo-border {{
+      border: 2px solid #4CBB17;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: -10px;
+  }}
+  .bmb-logo-border img {{
       width: 100%;
       max-width: 660px;
       display: block;
-      margin: 0 auto 0.8rem;
+      margin: 0 auto;
   }}
   .bmb-about-link {{
       font-family: 'DM Sans', sans-serif;
@@ -83,6 +91,8 @@ st.markdown(f"""
       text-transform: uppercase;
       color: #7a9a5a;
       text-decoration: none;
+      display: block;
+      margin: 20px 0;
   }}
   .bmb-about-link:hover {{ color: #2d5a1b; }}
 
@@ -454,8 +464,10 @@ st.markdown(f"""
 # ─── HEADER CARD ──────────────────────────────────────────────────────────────
 st.markdown(f"""
 <div class="bmb-header-card">
-  <img src="data:image/png;base64,{logo_b64}" alt="Blue Moon Botanics">
-  <a class="bmb-about-link" href="#" onclick="window.parent.document.querySelectorAll('[data-baseweb=tab]')[3].click();return false;">✦ About</a>
+  <div class="bmb-logo-border">
+    <img src="data:image/png;base64,{logo_b64}" alt="Blue Moon Botanics">
+  </div>
+  <a class="bmb-about-link" href="?about=1">✦ About</a>
 </div>
 """, unsafe_allow_html=True)
 
@@ -807,11 +819,91 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
             unsafe_allow_html=True
         )
 
+# ─── ABOUT VIEW ───────────────────────────────────────────────────────────────
+if st.query_params.get("about") == "1":
+    st.markdown('<div class="bmb-hex-divider"></div>', unsafe_allow_html=True)
+    st.markdown("""
+    <div style="margin-bottom: 1.5rem;">
+      <a href="/" style="font-family:'DM Sans',sans-serif; font-size:0.78rem; font-weight:500;
+         letter-spacing:0.1em; text-transform:uppercase; color:#7a9a5a; text-decoration:none;">← Back</a>
+    </div>
+    <div class="june-intro">
+
+    <p><strong>What is this?</strong></p>
+    <p>Blue Moon Botanics is a plant care companion that actually knows your plants.</p>
+    <p>Not generic advice pulled from a search result. Not a one-size-fits-all watering schedule.
+    A care profile built around the specific plant in your specific home. And eventually, around
+    the real-time environmental data of your space.</p>
+    <p>The goal is a personal plant care professional in your pocket. One who can help you identify
+    what you're growing, tell you what it needs, and (down the road) read the humidity sensor in
+    your greenhouse and tell you if your Calathea is in its happy place.</p>
+    <p>We're not there yet. But we're growing.</p>
+
+    <hr style="border-color:#c8d8b0;margin:1.2rem 0;">
+
+    <p><strong>Who is it for?</strong></p>
+    <p>If you just brought home your first pothos and have no idea what you're doing, this is for you.</p>
+    <p>If you've got a jungle for a living room and you're thinking about wiring up environmental
+    sensors to monitor your collection, this is for you.</p>
+    <p>The gap between those two people is mostly confidence and vocabulary, not capability.
+    Blue Moon Botanics aims to close that gap.</p>
+
+    <hr style="border-color:#c8d8b0;margin:1.2rem 0;">
+
+    <p><strong>About June</strong></p>
+    <p>June is the AI at the heart of Blue Moon Botanics.</p>
+    <p>The goal for June is to be the kind of expert who doesn't make you feel stupid for asking.
+    The goal is for her to feel like someone who knows considerably more than you do and doesn't
+    feel the need to perform enthusiasm about it. Warm through competence, not through cheerfulness.</p>
+    <p>Right now June's scope is focused. She's growing.</p>
+
+    <hr style="border-color:#c8d8b0;margin:1.2rem 0;">
+
+    <p><strong>A note on where things stand</strong></p>
+    <p>This is a beta. An early one.</p>
+    <p>The app works. The care data is real. But there are rough edges, missing features, and more
+    than a few things on the list that haven't been built yet.</p>
+    <p>Good plant care isn't rushed. Neither is this.</p>
+    <p>Expect updates of every stripe — from the functional to the cosmetic, and eventually dipping
+    into community-based features. If something feels broken or missing, it probably is, and it's
+    probably already on the list. If it's not, tell me.</p>
+    <p>Thanks for being here early.</p>
+
+    <hr style="border-color:#c8d8b0;margin:1.2rem 0;">
+
+    <p><strong>Who made this?</strong></p>
+    <p>My name is Justin. Most mornings I'm the last link in a long, interconnected chain of
+    logistics that I rarely get to see in its entirety. My workdays are siloed. Nothing carries
+    over and every morning is a clean slate.</p>
+    <p>I came to this project via a confluence of persistent curiosity in how things work and the
+    recognition that growth is rarely easy but routinely rewarding. I asked myself in which direction
+    I could point my attention to engage my curiosity and maximize my learning potential. And I
+    realized almost immediately I wanted to learn about a topic rich in data and high in practical
+    application so I could really get my hands dirty. Literally, as it turned out.</p>
+    <p>So I landed on plants. Partly because they're everywhere. Partly because the data pool is
+    extraordinarily deep. Partly because they're just beautiful. But why limit myself to experiencing
+    growing pains in learning one subject when I could double my discomfort? In for a penny,
+    in for a pound.</p>
+    <p>I was always interested in computers and electronics and equally intimidated by how complex
+    they were. Tinkering with them felt like it came with a high barrier to entry. Turns out that
+    feeling, standing at the edge of something unfamiliar and not sure if you have what it takes,
+    is exactly how a lot of people feel about keeping a plant alive or building an app.</p>
+    <p>Into the deep end I went. I hope to help people understand their plants better, first and
+    foremost. Behind the scenes I hope people can take away the realization that complex systems
+    are built on very basic principles, whether it's plant care or DIY electronics assembly.
+    Building your own is well within your reach. And maybe, if only as the part of the iceberg
+    beneath the surface, I hope I can help people realize that it's okay to feel out of your depth.</p>
+    <p>Jump and find your wings on the way down.</p>
+
+    </div>
+    """, unsafe_allow_html=True)
+    st.stop()
+
 # ─── HEX DIVIDER ──────────────────────────────────────────────────────────────
 st.markdown('<div class="bmb-hex-divider"></div>', unsafe_allow_html=True)
 
 # ─── TABS ─────────────────────────────────────────────────────────────────────
-tab_manual, tab_collection, tab_june, tab_about = st.tabs(["Add a Plant", "My Collection", "✦ June", "✦ About"])
+tab_manual, tab_collection, tab_june = st.tabs(["Add a Plant", "My Collection", "✦ June"])
 
 # ══════════════════════════════════════════════════════════════════════════════
 # TAB 1 — JUNE
@@ -1122,79 +1214,4 @@ with tab_collection:
                             '<script>document.getElementById("care-card-anchor").scrollIntoView({behavior:"smooth"});</script>',
                             unsafe_allow_html=True
                         ) 
-# ══════════════════════════════════════════════════════════════════════════════
-# TAB 4 — ABOUT
-# ══════════════════════════════════════════════════════════════════════════════
-with tab_about:
-    st.markdown("""
-    <div class="june-intro">
-
-    <p><strong>What is this?</strong></p>
-    <p>Blue Moon Botanics is a plant care companion that actually knows your plants.</p>
-    <p>Not generic advice pulled from a search result. Not a one-size-fits-all watering schedule.
-    A care profile built around the specific plant in your specific home. And eventually, around
-    the real-time environmental data of your space.</p>
-    <p>The goal is a personal plant care professional in your pocket. One who can help you identify
-    what you're growing, tell you what it needs, and (down the road) read the humidity sensor in
-    your greenhouse and tell you if your Calathea is in its happy place.</p>
-    <p>We're not there yet. But we're growing.</p>
-
-    <hr style="border-color:#c8d8b0;margin:1.2rem 0;">
-
-    <p><strong>Who is it for?</strong></p>
-    <p>If you just brought home your first pothos and have no idea what you're doing, this is for you.</p>
-    <p>If you've got a jungle for a living room and you're thinking about wiring up environmental
-    sensors to monitor your collection, this is for you.</p>
-    <p>The gap between those two people is mostly confidence and vocabulary, not capability.
-    Blue Moon Botanics aims to close that gap.</p>
-
-    <hr style="border-color:#c8d8b0;margin:1.2rem 0;">
-
-    <p><strong>About June</strong></p>
-    <p>June is the AI at the heart of Blue Moon Botanics.</p>
-    <p>The goal for June is to be the kind of expert who doesn't make you feel stupid for asking.
-    The goal is for her to feel like someone who knows considerably more than you do and doesn't
-    feel the need to perform enthusiasm about it. Warm through competence, not through cheerfulness.</p>
-    <p>Right now June's scope is focused. She's growing.</p>
-
-    <hr style="border-color:#c8d8b0;margin:1.2rem 0;">
-
-    <p><strong>A note on where things stand</strong></p>
-    <p>This is a beta. An early one.</p>
-    <p>The app works. The care data is real. But there are rough edges, missing features, and more
-    than a few things on the list that haven't been built yet.</p>
-    <p>Good plant care isn't rushed. Neither is this.</p>
-    <p>Expect updates of every stripe — from the functional to the cosmetic, and eventually dipping
-    into community-based features. If something feels broken or missing, it probably is, and it's
-    probably already on the list. If it's not, tell me.</p>
-    <p>Thanks for being here early.</p>
-
-    <hr style="border-color:#c8d8b0;margin:1.2rem 0;">
-
-    <p><strong>Who made this?</strong></p>
-    <p>My name is Justin. Most mornings I'm the last link in a long, interconnected chain of
-    logistics that I rarely get to see in its entirety. My workdays are siloed. Nothing carries
-    over and every morning is a clean slate.</p>
-    <p>I came to this project via a confluence of persistent curiosity in how things work and the
-    recognition that growth is rarely easy but routinely rewarding. I asked myself in which direction
-    I could point my attention to engage my curiosity and maximize my learning potential. And I
-    realized almost immediately I wanted to learn about a topic rich in data and high in practical
-    application so I could really get my hands dirty. Literally, as it turned out.</p>
-    <p>So I landed on plants. Partly because they're everywhere. Partly because the data pool is
-    extraordinarily deep. Partly because they're just beautiful. But why limit myself to experiencing
-    growing pains in learning one subject when I could double my discomfort? In for a penny,
-    in for a pound.</p>
-    <p>I was always interested in computers and electronics and equally intimidated by how complex
-    they were. Tinkering with them felt like it came with a high barrier to entry. Turns out that
-    feeling, standing at the edge of something unfamiliar and not sure if you have what it takes,
-    is exactly how a lot of people feel about keeping a plant alive or building an app.</p>
-    <p>Into the deep end I went. I hope to help people understand their plants better, first and
-    foremost. Behind the scenes I hope people can take away the realization that complex systems
-    are built on very basic principles, whether it's plant care or DIY electronics assembly.
-    Building your own is well within your reach. And maybe, if only as the part of the iceberg
-    beneath the surface, I hope I can help people realize that it's okay to feel out of your depth.</p>
-    <p>Jump and find your wings on the way down.</p>
-
-    </div>
-    """, unsafe_allow_html=True)
     

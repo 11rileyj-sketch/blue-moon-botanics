@@ -460,7 +460,7 @@ st.markdown(f"""
   </div>
   <a class="bmb-about-link" href="?tab=about">✦ About</a>
 </div>
-""", unsafe_allow_html=True))
+""", unsafe_allow_html=True)
 
 # ─── CONFIG & HELPERS ─────────────────────────────────────────────────────────
 SETTINGS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "user_settings.json")

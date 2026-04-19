@@ -608,9 +608,10 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
                     background-color: #4CBB17 !important;
                     color: white !important;
                     border: none !important;
-                    font-size: 1.4rem !important;
+                    font-size: 2rem !important;
                     line-height: 1 !important;
-                    padding: 0.5rem !important;
+                    padding: 0.6rem !important;
+                    min-height: 3rem !important;
                 }
                 </style>
                 <div class="camera-btn-wrap">

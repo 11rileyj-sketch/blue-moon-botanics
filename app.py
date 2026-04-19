@@ -306,6 +306,120 @@ st.markdown(f"""
   }}
 
   hr {{ border-color: #c8d8b0; margin: 1.2rem 0; }}
+
+/* ── Photo card grid ─────────────────────────────────────────── */
+  .plant-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+  }
+  .plant-tile {
+      background: #ffffff;
+      border: 1px solid #c8d8b0;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: box-shadow 0.2s, border-color 0.2s;
+  }
+  .plant-tile:hover {
+      box-shadow: 0 4px 16px rgba(30,45,20,0.13);
+      border-color: #4CBB17;
+  }
+  .plant-tile.selected {
+      border-color: #4CBB17;
+      box-shadow: 0 0 0 2px rgba(76,187,23,0.25);
+  }
+  .plant-tile img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      display: block;
+  }
+  .plant-tile-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: #2d5a1b;
+      padding: 0.5rem 0.7rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+  }
+
+  /* ── Camera icon button ──────────────────────────────────────── */
+  .camera-btn-wrap {
+      text-align: center;
+      margin: 0.4rem 0 0.8rem;
+  }
+  .camera-btn {
+      position: relative;
+      display: inline-block;
+      background: rgba(255,255,255,0.85);
+      border: 1px solid #c8d8b0;
+      border-radius: 50%;
+      width: 2.2rem;
+      height: 2.2rem;
+      line-height: 2.2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+  }
+  .camera-btn:hover { background: #eaf4e0; border-color: #4CBB17; }
+  .camera-btn .tooltip {
+      visibility: hidden;
+      opacity: 0;
+      background: #2d5a1b;
+      color: #fff;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: 3px;
+      padding: 0.25rem 0.5rem;
+      position: absolute;
+      bottom: 120%;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      transition: opacity 0.15s;
+      pointer-events: none;
+  }
+  .camera-btn:hover .tooltip {
+      visibility: visible;
+      opacity: 1;
+  }
+
+  /* ── Rotating quotes ─────────────────────────────────────────── */
+  .quote-spinner-wrap {
+      text-align: center;
+      padding: 2rem 1rem;
+  }
+  .quote-spinner-icon {
+      font-size: 2rem;
+      margin-bottom: 0.8rem;
+      animation: spin-slow 3s linear infinite;
+  }
+  @keyframes spin-slow {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+  }
+  .quote-text {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1rem;
+      color: #2d5a1b;
+      line-height: 1.6;
+      max-width: 480px;
+      margin: 0 auto 0.4rem;
+      min-height: 3.5rem;
+  }
+  .quote-attr {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #7a9a5a;
+  }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -512,6 +626,27 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
         col_img, col_info = st.columns([1, 2])
         with col_img:
             st.image(photo_url, use_container_width=True)
+            record_id = payload.get("record_id")
+            if record_id:
+                st.markdown("""
+                <div class="camera-btn-wrap">
+                  <span class="camera-btn">📷
+                    <span class="tooltip">Update Photo</span>
+                  </span>
+                </div>
+                """, unsafe_allow_html=True)
+                if st.button("📷", key=f"cam_{record_id}", help="Update Photo", use_container_width=False):
+                    with st.spinner("Searching for a photo..."):
+                        new_url = update_specimen_photo(
+                            record_id,
+                            payload.get("common_name", ""),
+                            payload.get("common_name", ""),
+                            payload.get("scientific_name", "")
+                        )
+                    if new_url:
+                        st.success("Photo updated! Reload to see it.")
+                    else:
+                        st.warning("Couldn't find a photo. Try again or rerun intake.")
         with col_info:
             st.markdown(f'<div class="result-common">{common_name}</div>', unsafe_allow_html=True)
             st.markdown(f'<div class="result-scientific">{scientific}</div>', unsafe_allow_html=True)
@@ -760,45 +895,72 @@ with tab_collection:
                     unsafe_allow_html=True
                 )
 
+                # ── Build tile data ───────────────────────────────────────────
+                tiles = []
                 for record in records:
                     f = record.get("fields", {})
                     species_raw_val = f.get("Species", "")
                     species_raw = species_raw_val if isinstance(species_raw_val, str) else ""
                     common = f.get("Nickname") or species_raw or "Unknown Plant"
-
                     sp = fetch_species(common)
+                    photo_url = (f.get("Specimen Photo") or [{}])[0].get("url", "")
+                    tiles.append({
+                        "record": record,
+                        "f": f,
+                        "common": common,
+                        "sp": sp,
+                        "photo_url": photo_url,
+                    })
 
-                    card_payload = {
-                        "common_name":         common,
-                        "scientific_name":     sp.get("Scientific Name", species_raw),
-                        "cultivar":            sp.get("Cultivar", ""),
-                        "care_summary":        "",
-                        "care_notes":          sp.get("Care Notes", ""),
-                        "sun":                 sp.get("Sunlight", f.get("Lighting", "")),
-                        "water":               sp.get("Water", ""),
-                        "cycle":               sp.get("Cycle", f.get("Plant Age", "")),
-                        "photo_url":           (f.get("Specimen Photo") or [{}])[0].get("url", ""),
-                        "fertilizer_baseline": sp.get("Fertilizer Baseline", f.get("Fertilizer Baseline", "")),
-                        "local_authority":     sp.get("Local Authority", ""),
-                        "expert_link":         sp.get("Expert Resource", ""),
-                        "flowering":           sp.get("Flowering", False),
-                    }
-                    col_photo_btn, _ = st.columns([1, 3])
-                    with col_photo_btn:
-                        if st.button("📷 Update Photo", key=f"photo_{record['id']}"):
-                            with st.spinner("Searching for a photo..."):
-                                new_url = update_specimen_photo(
-                                    record["id"],
-                                    f.get("Species", common),
-                                    common,
-                                    card_payload["scientific_name"]
-                                )
-                            if new_url:
-                                card_payload["photo_url"] = new_url
-                                st.success("Photo updated!")
-                            else:
-                                st.warning("Couldn't find a photo. Try again or rerun intake.")
+                # ── Render grid ───────────────────────────────────────────────
+                cols = st.columns(2)
+                for i, tile in enumerate(tiles):
+                    with cols[i % 2]:
+                        selected = st.session_state.get("selected_plant") == tile["record"]["id"]
+                        tile_class = "plant-tile selected" if selected else "plant-tile"
+                        img_src = tile["photo_url"] if tile["photo_url"] else "app/static/plant_placeholder.png"
+                        st.markdown(f"""
+                        <div class="{tile_class}" id="tile-{tile['record']['id']}">
+                            <img src="{img_src}" onerror="this.src='app/static/plant_placeholder.png'">
+                            <div class="plant-tile-label">🌿 {tile['common']}</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                        if st.button("Open", key=f"tile_{tile['record']['id']}", help=tile["common"]):
+                            st.session_state["selected_plant"] = tile["record"]["id"]
+                            st.rerun()
 
-                    with st.expander(f"🌿 {common}", expanded=False):
-                        render_result_card(card_payload, show_added_confirm=False)                                
+                # ── Care card for selected plant ───────────────────────────────
+                st.markdown('<div id="care-card-anchor"></div>', unsafe_allow_html=True)
+                selected_id = st.session_state.get("selected_plant")
+                if selected_id:
+                    match = next((t for t in tiles if t["record"]["id"] == selected_id), None)
+                    if match:
+                        f  = match["f"]
+                        sp = match["sp"]
+                        common = match["common"]
+                        record_id = match["record"]["id"]
+
+                        card_payload = {
+                            "record_id":           record_id,
+                            "common_name":         common,
+                            "scientific_name":     sp.get("Scientific Name", f.get("Species", "")),
+                            "cultivar":            sp.get("Cultivar", ""),
+                            "care_summary":        "",
+                            "care_notes":          sp.get("Care Notes", ""),
+                            "sun":                 sp.get("Sunlight", f.get("Lighting", "")),
+                            "water":               sp.get("Water", ""),
+                            "cycle":               sp.get("Cycle", f.get("Plant Age", "")),
+                            "photo_url":           match["photo_url"],
+                            "fertilizer_baseline": sp.get("Fertilizer Baseline", f.get("Fertilizer Baseline", "")),
+                            "local_authority":     sp.get("Local Authority", ""),
+                            "expert_link":         sp.get("Expert Resource", ""),
+                            "flowering":           sp.get("Flowering", False),
+                        }
+
+                        st.markdown("---")
+                        render_result_card(card_payload, show_added_confirm=False, record_id=record_id)
+                        st.markdown(
+                            '<script>document.getElementById("care-card-anchor").scrollIntoView({behavior:"smooth"});</script>',
+                            unsafe_allow_html=True
+                        )                                
 

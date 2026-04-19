@@ -390,6 +390,12 @@ st.markdown(f"""
       opacity: 1;
   }}
 
+  button[kind="secondary"][data-testid*="cam_"] {{
+      background-color: #4CBB17 !important;
+      color: #ffffff !important;
+      border: none !important;
+  }}
+
   /* ── Rotating quotes ─────────────────────────────────────────── */
   .quote-spinner-wrap {{
       text-align: center;
@@ -629,13 +635,6 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
             st.image(photo_url, use_container_width=True)
             record_id = payload.get("record_id")
             if record_id:
-                st.markdown("""
-                <div class="camera-btn-wrap">
-                  <span class="camera-btn">📷
-                    <span class="tooltip">Update Photo</span>
-                  </span>
-                </div>
-                """, unsafe_allow_html=True)
                 if st.button("📷", key=f"cam_{record_id}", help="Update Photo", use_container_width=False):
                     with st.spinner("Searching for a photo..."):
                         new_url = update_specimen_photo(

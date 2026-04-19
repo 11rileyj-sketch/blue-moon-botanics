@@ -42,11 +42,12 @@ My name is Justin. Most mornings I'm the last link in a long, interconnected cha
 
 I came to this project via a confluence of a persistent curioiusity in how things work and the recognition that growth is rarely easy but routinely rewarding. I asked myself in which direction could I point my attention to engage my curiousity and maximize my learning potential.  And I realized almost immediately I wanted to learn about a topic rich in data and high in practical application so I could really get my hands dirty.  Literally, as it turned out.  
 
-So I landed on plants. Partly because they're everywhere. Partly because the data pool is extraordinarily deep. Partly because they're just beautiful. But why limit myself to experiencing growing pains in learing one subject when I could double my discomfort?  In for a penny, in for a pound. 
+So I landed on plants. Partly because they're everywhere. Partly because the data pool is extraordinarily deep. Partly because they're just beautiful. But why limit myself to experiencing growing pains in learing one subject when I could double my discomfort?  
+In for a penny, in for a pound. 
 
 I was always interested in computers and electronics and equally intimidated by how complex they were.  Tinkering with them felt like it came with a high barrier to entry. Turns out that feeling, standing at the edge of something unfamiliar and not sure if you have what it takes, is exactly how a lot of people feel about keeping a plant alive or building an app.
 
-Into the deep end I went.  I hope to help people understand their plants better, first and foremost.  Behind the scenes, I hope people can take away the realization that complex electronic systems are built on very basic principles.  Buildling your own is well within your reach.  And maybe if only as the part of the iceberg beneath the surface, I hope I can help people realize that it's okay to feel out of your depth.  
+Into the deep end I went.  I hope to help people understand their plants better, first and foremost.  Behind the scenes I hope people can take away the realization that complex systems are built on very basic principles, whether it's plant care or DIY electronics assembly.  Buildling your own is well within your reach.  And maybe, if only as the part of the iceberg beneath the surface, I hope I can help people realize that it's okay to feel out of your depth.  
 
 Jump and find your wings on the way down.
 

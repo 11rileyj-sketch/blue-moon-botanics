@@ -349,45 +349,8 @@ st.markdown(f"""
   }}
 
   /* ── Camera icon button ──────────────────────────────────────── */
-  .camera-btn-wrap .stButton > button,
-  .camera-btn-wrap button {{
-      background-color: #4CBB17 !important;
-      color: #ffffff !important;
-      border: none !important;
-      font-size: 1.4rem !important;
-      padding: 0.3rem 0.5rem !important;
-  }}
-  .camera-btn {{
-      position: relative;
-      display: inline-block;
-      background: rgba(255,255,255,0.85);
-      border: 1px solid #c8d8b0;
-      border-radius: 50%;
-      width: 2.2rem;
-      height: 2.2rem;
-      line-height: 2.2rem;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.2s, border-color 0.2s;
-  }}
-  .camera-btn:hover {{ background: #eaf4e0; border-color: #4CBB17; }}
-  .camera-btn .tooltip {{
-      visibility: hidden;
-      opacity: 0;
-      background: #2d5a1b;
-      color: #fff;
-      font-size: 0.7rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      border-radius: 3px;
-      padding: 0.25rem 0.5rem;
-      position: absolute;
-      bottom: 120%;
-      left: 50%;
-      transform: translateX(-50%);
-      white-space: nowrap;
-      transition: opacity 0.15s;
-      pointer-events: none;
+  .camera-btn-wrap {{
+      text-align: center;
   }}
   .camera-btn:hover .tooltip {{
       visibility: visible;
@@ -639,14 +602,16 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
             st.image(photo_url, use_container_width=True)
             record_id = payload.get("record_id")
             if record_id:
-                st.markdown(f"""
+                st.markdown("""
                 <style>
-                div[data-testid="stButton"] button[kind="secondaryFormSubmit"],
-                div[data-testid="stButton"]:has(button) button {{
+                div[data-testid="stButton"]:has(button) button {
                     background-color: #4CBB17 !important;
                     color: white !important;
                     border: none !important;
-                }}
+                    font-size: 1.4rem !important;
+                    line-height: 1 !important;
+                    padding: 0.5rem !important;
+                }
                 </style>
                 <div class="camera-btn-wrap">
                 """, unsafe_allow_html=True)

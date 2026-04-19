@@ -717,6 +717,7 @@ search URL rather than inventing a path.
             record_id = parse_record_id(response_text)
             if record_id:
                 store_record_id(plant_name, record_id, log)
+                payload["airtable_record_id"] = record_id
             else:
                 _log(f"   ⚠️ Record ID not captured — try [u] to retry.", log)
 

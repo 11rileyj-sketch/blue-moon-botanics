@@ -450,11 +450,11 @@ QUOTES = load_quotes()
 
 # ─── EMOJI NORMALIZERS ────────────────────────────────────────────────────────
 SUN_MAP = {
-    "direct":          ("☀️☀️☀️", "Direct sun — 4+ hours of direct sunlight daily"),
-    "bright_indirect": ("☀️☀️",   "Bright indirect — bright room, no direct rays on leaves"),
-    "medium":          ("⛅⛅",    "Medium light — a few feet from a window"),
-    "low":             ("⛅",     "Low light — tolerates dim conditions"),
-    "shade":           ("☁️",     "Shade — no direct sun needed"),
+    "direct":          ("☀️☀️☀️",   "Direct sun — 4+ hours of direct sunlight daily"),
+    "bright_indirect": ("🌤️🌤️",  "Bright indirect — bright room, no direct rays on leaves"),
+    "medium":          ("🌤️",     "Medium light — a few feet from a window"),
+    "low":             ("🌥️",     "Low light — tolerates dim conditions"),
+    "shade":           ("☁️",      "Shade — no direct sun needed"),
 }
 
 WATER_MAP = {
@@ -466,6 +466,19 @@ WATER_MAP = {
 def normalize_sun(raw):
     if not raw:
         return SUN_MAP["medium"]
+    r = raw.strip()
+    # Handle legacy emoji values stored directly in Airtable
+    if r in ("☀️☀️☀️", "🌞"):
+        return SUN_MAP["direct"]
+    if r in ("☀️☀️",):
+        return SUN_MAP["bright_indirect"]
+    if r in ("☀️",):
+        return SUN_MAP["bright_indirect"]  # legacy single sun = indirect
+    if r in ("⛅", "🌤️"):
+        return SUN_MAP["medium"]
+    if r in ("☁️",):
+        return SUN_MAP["shade"]
+    # Continue with text matching below...
     r = raw.lower().strip()
     if any(x in r for x in ["direct sun", "full sun", "high light", "bright direct"]):
         return SUN_MAP["direct"]
@@ -477,11 +490,20 @@ def normalize_sun(raw):
         return SUN_MAP["low"]
     if any(x in r for x in ["shade", "no sun", "no direct"]):
         return SUN_MAP["shade"]
-    return SUN_MAP["medium"]  # safe default
+    return SUN_MAP["medium"]
 
 def normalize_water(raw):
     if not raw:
         return WATER_MAP["medium"]
+    r = raw.strip()
+    # Handle legacy emoji values stored directly in Airtable
+    if r in ("💧💧💧",):
+        return WATER_MAP["high"]
+    if r in ("💧💧",):
+        return WATER_MAP["medium"]
+    if r in ("💧",):
+        return WATER_MAP["low"]
+    # Continue with text matching below...
     r = raw.lower().strip()
     if any(x in r for x in ["high", "frequent", "moist", "consistently", "wet"]):
         return WATER_MAP["high"]
@@ -489,7 +511,7 @@ def normalize_water(raw):
         return WATER_MAP["low"]
     if any(x in r for x in ["medium", "moderate", "average", "regular", "when top"]):
         return WATER_MAP["medium"]
-    return WATER_MAP["medium"]  # safe default
+    return WATER_MAP["medium"]
 
 # ─── AIRTABLE HELPERS ─────────────────────────────────────────────────────────
 def airtable_headers():

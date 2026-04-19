@@ -349,13 +349,13 @@ st.markdown(f"""
   }}
 
   /* ── Camera icon button ──────────────────────────────────────── */
-  .camera-btn-wrap .stButton > button {{
+  .camera-btn-wrap .stButton > button,
+  .camera-btn-wrap button {{
       background-color: #4CBB17 !important;
       color: #ffffff !important;
       border: none !important;
-      font-size: 1.3rem !important;
-      line-height: 1 !important;
-      padding: 0.4rem !important;
+      font-size: 1.4rem !important;
+      padding: 0.3rem 0.5rem !important;
   }}
   .camera-btn {{
       position: relative;

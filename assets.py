@@ -12,3 +12,13 @@ def get_bg_base64(file_path="bg_tile.png"):
     except Exception:
         pass
     return ""
+
+@st.cache_data
+def get_placeholder_base64(file_path="plant_placeholder.png"):
+    try:
+        if os.path.exists(file_path):
+            with open(file_path, "rb") as f:
+                return base64.b64encode(f.read()).decode()
+    except Exception:
+        pass
+    return ""

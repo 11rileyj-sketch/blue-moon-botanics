@@ -7,7 +7,7 @@ import urllib.parse
 import base64
 import random
 from plant_intake import run_intake, load_manifest, load_cache
-from assets import get_bg_base64
+from assets import get_bg_base64, get_placeholder_base64
 from image_search import get_plant_image, build_wsrv_url
 
 # ─── PAGE CONFIG ──────────────────────────────────────────────────────────────
@@ -20,6 +20,7 @@ st.set_page_config(
 
 # ─── STYLES ───────────────────────────────────────────────────────────────────
 bg_image = get_bg_base64()
+placeholder_b64 = get_placeholder_base64()
 
 st.markdown(f"""
 <style>
@@ -918,14 +919,14 @@ with tab_collection:
                     with cols[i % 2]:
                         selected = st.session_state.get("selected_plant") == tile["record"]["id"]
                         tile_class = "plant-tile selected" if selected else "plant-tile"
-                        img_src = tile["photo_url"] if tile["photo_url"] else "app/static/plant_placeholder.png"
+                        img_src = tile["photo_url"] if tile["photo_url"] else f"data:image/png;base64,{placeholder_b64}"
                         st.markdown(f"""
                         <div class="{tile_class}" id="tile-{tile['record']['id']}">
-                            <img src="{img_src}" onerror="this.src='app/static/plant_placeholder.png'">
+                            <img src="{img_src}" onerror="this.src='data:image/png;base64,{placeholder_b64}'">
                             <div class="plant-tile-label">🌿 {tile['common']}</div>
                         </div>
                         """, unsafe_allow_html=True)
-                        if st.button("Open", key=f"tile_{tile['record']['id']}", help=tile["common"]):
+                        if st.button(f"🌿 {tile['common']} →", key=f"tile_{tile['record']['id']}"):
                             st.session_state["selected_plant"] = tile["record"]["id"]
                             st.rerun()
 

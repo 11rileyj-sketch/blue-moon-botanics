@@ -448,6 +448,49 @@ def load_quotes():
 
 QUOTES = load_quotes()
 
+# ─── EMOJI NORMALIZERS ────────────────────────────────────────────────────────
+SUN_MAP = {
+    "direct":          ("☀️☀️☀️", "Direct sun — 4+ hours of direct sunlight daily"),
+    "bright_indirect": ("☀️☀️",   "Bright indirect — bright room, no direct rays on leaves"),
+    "medium":          ("⛅⛅",    "Medium light — a few feet from a window"),
+    "low":             ("⛅",     "Low light — tolerates dim conditions"),
+    "shade":           ("☁️",     "Shade — no direct sun needed"),
+}
+
+WATER_MAP = {
+    "high":   ("💧💧💧", "High — keep soil consistently moist"),
+    "medium": ("💧💧",   "Medium — water when top inch of soil is dry"),
+    "low":    ("💧",     "Low — drought tolerant, let soil dry completely"),
+}
+
+def normalize_sun(raw):
+    if not raw:
+        return SUN_MAP["medium"]
+    r = raw.lower().strip()
+    if any(x in r for x in ["direct sun", "full sun", "high light", "bright direct"]):
+        return SUN_MAP["direct"]
+    if any(x in r for x in ["bright indirect", "bright", "indirect"]):
+        return SUN_MAP["bright_indirect"]
+    if any(x in r for x in ["medium", "moderate", "partial", "filtered"]):
+        return SUN_MAP["medium"]
+    if any(x in r for x in ["low", "shade tolerant", "dim"]):
+        return SUN_MAP["low"]
+    if any(x in r for x in ["shade", "no sun", "no direct"]):
+        return SUN_MAP["shade"]
+    return SUN_MAP["medium"]  # safe default
+
+def normalize_water(raw):
+    if not raw:
+        return WATER_MAP["medium"]
+    r = raw.lower().strip()
+    if any(x in r for x in ["high", "frequent", "moist", "consistently", "wet"]):
+        return WATER_MAP["high"]
+    if any(x in r for x in ["low", "drought", "infrequent", "dry out", "dry completely", "sparingly"]):
+        return WATER_MAP["low"]
+    if any(x in r for x in ["medium", "moderate", "average", "regular", "when top"]):
+        return WATER_MAP["medium"]
+    return WATER_MAP["medium"]  # safe default
+
 # ─── AIRTABLE HELPERS ─────────────────────────────────────────────────────────
 def airtable_headers():
     return {
@@ -528,10 +571,6 @@ def add_existing_to_collection(plant_name, beta_user):
     
     log = []
     log.append(f"📚 Found '{plant_name}' in Species Library. Skipping Gemini.")
-    
-    sun_icons   = {"Full Sun": "☀️☀️☀️", "Partial Sun": "☀️☀️",
-                   "Indirect Light": "☀️", "Low Light": "☁️"}
-    water_icons = {"Low": "💧", "Medium": "💧💧", "High": "💧💧💧"}
 
     raw_tips   = sp.get("Care Notes", "")
     photo_url  = sp.get("Photo URL", "")
@@ -544,8 +583,8 @@ def add_existing_to_collection(plant_name, beta_user):
         "care_notes":          raw_tips,
         "local_authority":     sp.get("Local Authority", ""),
         "expert_link":         sp.get("Expert Resource", ""),
-        "sun":                 sun_icons.get(sp.get("Sunlight", ""), "☀️"),
-        "water":               water_icons.get(sp.get("Water", ""), "💧"),
+        "sun":                 sp.get("Sunlight", ""),
+        "water":               sp.get("Water", ""),
         "cycle":               sp.get("Cycle", ""),
         "flowering":           sp.get("Flowering", False),
         "photo_url":           photo_url,
@@ -596,8 +635,8 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
     cultivar     = payload.get("cultivar", "")
     care_summary = payload.get("care_summary", "")
     care_notes   = payload.get("care_notes", "")
-    sun          = payload.get("sun", "☀️")
-    water        = payload.get("water", "💧")
+    sun_emoji, sun_tip     = normalize_sun(payload.get("sun", ""))
+    water_emoji, water_tip = normalize_water(payload.get("water", ""))
     cycle        = payload.get("cycle", "")
     photo_url    = payload.get("photo_url", "")
     fert         = payload.get("fertilizer_baseline", "")
@@ -606,8 +645,8 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
     flowering    = payload.get("flowering", False)
 
     pills = []
-    if sun:       pills.append(sun)
-    if water:     pills.append(water)
+    if sun_emoji:   pills.append(f'<span title="{sun_tip}">{sun_emoji}</span>')
+    if water_emoji: pills.append(f'<span title="{water_tip}">{water_emoji}</span>')
     if cycle:     pills.append(cycle)
     if flowering: pills.append("🌸 Flowering")
     if cultivar:  pills.append(f"cv. {cultivar}")
@@ -662,7 +701,7 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
             st.markdown(f'<div class="result-summary">{care_summary}</div>', unsafe_allow_html=True)
 
         if care_notes:
-            notes_html = inject_emojis(care_notes, sun, water)
+            notes_html = inject_emojis(care_notes, sun_emoji, water_emoji)
             st.markdown(f'<div class="care-notes">{notes_html}</div>', unsafe_allow_html=True)
 
         if fert:

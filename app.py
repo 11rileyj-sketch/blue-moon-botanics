@@ -307,46 +307,6 @@ st.markdown(f"""
 
   hr {{ border-color: #c8d8b0; margin: 1.2rem 0; }}
 
-/* ── Photo card grid ─────────────────────────────────────────── */
-  .plant-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-  }
-  .plant-tile {
-      background: #ffffff;
-      border: 1px solid #c8d8b0;
-      border-radius: 8px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: box-shadow 0.2s, border-color 0.2s;
-  }
-  .plant-tile:hover {
-      box-shadow: 0 4px 16px rgba(30,45,20,0.13);
-      border-color: #4CBB17;
-  }
-  .plant-tile.selected {
-      border-color: #4CBB17;
-      box-shadow: 0 0 0 2px rgba(76,187,23,0.25);
-  }
-  .plant-tile img {
-      width: 100%;
-      aspect-ratio: 4/3;
-      object-fit: cover;
-      display: block;
-  }
-  .plant-tile-label {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 500;
-      color: #2d5a1b;
-      padding: 0.5rem 0.7rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-  }
-
   /* ── Photo card grid ─────────────────────────────────────────── */
   .plant-grid {{
       display: grid;

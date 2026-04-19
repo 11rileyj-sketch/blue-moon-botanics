@@ -635,20 +635,18 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
             st.image(photo_url, use_container_width=True)
             record_id = payload.get("record_id")
             if record_id:
-                _, btn_col, _ = st.columns([1, 2, 1])
-                with btn_col:
-                    if st.button("📷 Update Photo", key=f"cam_{record_id}", use_container_width=True):
-                        with st.spinner("Searching for a photo..."):
-                            new_url = update_specimen_photo(
-                                record_id,
-                                payload.get("common_name", ""),
-                                payload.get("common_name", ""),
-                                payload.get("scientific_name", "")
-                            )
-                        if new_url:
-                            st.success("Photo updated! Reload to see it.")
-                        else:
-                            st.warning("Couldn't find a photo. Try again or rerun intake.")
+                if st.button("📷", key=f"cam_{record_id}", help="Update Photo", use_container_width=True):
+                    with st.spinner("Searching for a photo..."):
+                        new_url = update_specimen_photo(
+                            record_id,
+                            payload.get("common_name", ""),
+                            payload.get("common_name", ""),
+                            payload.get("scientific_name", "")
+                        )
+                    if new_url:
+                        st.success("Photo updated! Reload to see it.")
+                    else:
+                        st.warning("Couldn't find a photo. Try again or rerun intake.")
         with col_info:
             st.markdown(f'<div class="result-common">{common_name}</div>', unsafe_allow_html=True)
             st.markdown(f'<div class="result-scientific">{scientific}</div>', unsafe_allow_html=True)

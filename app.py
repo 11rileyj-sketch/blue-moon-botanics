@@ -698,20 +698,22 @@ with tab_collection:
                         "expert_link":         sp.get("Expert Resource", ""),
                         "flowering":           sp.get("Flowering", False),
                     }
+                    col_photo_btn, _ = st.columns([1, 3])
+                    with col_photo_btn:
+                        if st.button("📷 Update Photo", key=f"photo_{record['id']}"):
+                            with st.spinner("Searching for a photo..."):
+                                new_url = update_specimen_photo(
+                                    record["id"],
+                                    f.get("Species", common),
+                                    common,
+                                    card_payload["scientific_name"]
+                                )
+                            if new_url:
+                                card_payload["photo_url"] = new_url
+                                st.success("Photo updated!")
+                            else:
+                                st.warning("Couldn't find a photo. Try again or rerun intake.")
+
                     with st.expander(f"🌿 {common}", expanded=False):
-                        col_photo_btn, _ = st.columns([1, 3])
-                        with col_photo_btn:
-                            if st.button("📷 Update Photo", key=f"photo_{record['id']}"):
-                                with st.spinner("Searching for a photo..."):
-                                    new_url = update_specimen_photo(
-                                        record["id"],
-                                        f.get("Species", common),
-                                        common,
-                                        card_payload["scientific_name"]
-                                    )
-                                if new_url:
-                                    card_payload["photo_url"] = new_url
-                                    st.success("Photo updated!")
-                                else:
-                                    st.warning("Couldn't find a photo. Try again or rerun intake.")
-                                render_result_card(card_payload, show_added_confirm=False)
+                        render_result_card(card_payload, show_added_confirm=False)                                
+

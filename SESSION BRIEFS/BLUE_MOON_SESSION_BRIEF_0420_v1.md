@@ -125,6 +125,27 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 
 ## 📋 LAST SESSION SUMMARY
 
+**APR 20 2026 — Session 12:** First Claude Code session. Deliberately ignored remaining TODO list to close out UI/UX polish that was carrying over. All layout and About link items resolved. App bumped to v1.3.0. Rounded corners on block-container remain square — Streamlit clips border-radius regardless of overflow approach, dropped as not worth fighting.
+
+**Completed:**
+
+- 80px hex tile reveal at top and bottom of content area (margin on block-container, not header card)
+- 20px established as style constant — applied to all internal box spacing
+- Green border restructured to wrap logo image only via `.bmb-logo-border` — not the full header card
+- Header card fully rounded (`border-radius: 12px`), About link sits below border with 20px breathing room
+- ✦ About link wired via `?about=1` query params — JS approach abandoned, query params reliable
+- About tab removed from tab bar entirely — content served as standalone view with ← Back link
+- Hex divider `margin-bottom` added for tab breathing room in second box
+- `overflow: hidden` tried and reverted — clips content without fixing corners
+- Session brief updated live in Claude Code (no copy-paste)
+- Pushed to GitHub / Railway via Claude Code
+
+**Key files changed this session:**
+
+- `app.py` — layout spacing, header restructure, About page, v1.3.0
+
+---
+
 **APR 20 2026 — Session 11:** Ignored the TODO list intentionally — focused on two visual tweaks that turned into a full UI overhaul. Strong execution, good momentum. Layout polish still has one open item (top gap / rounded corners) but the app looks dramatically better.
 
 **Completed:**

@@ -39,13 +39,22 @@ st.markdown(f"""
       background-size: 400px auto;
   }}
 
-  /* Content panel floats over tile */
+  /* Container is now transparent — cards handle their own backgrounds */
   .block-container {{
-      background-color: rgba(252, 250, 245, 0.97) !important;
-      border-radius: 12px !important;
+      background-color: transparent !important;
+      border-radius: 0 !important;
       padding: 80px 2.5rem 3rem !important;
       max-width: 740px;
+      box-shadow: none !important;
+  }}
+
+  /* Shared card style — used by header and intake */
+  .bmb-card {{
+      background-color: rgba(252, 250, 245, 0.97);
+      border-radius: 12px;
       box-shadow: 0 2px 24px rgba(30,45,20,0.12);
+      padding: 1.5rem 2rem;
+      margin-bottom: 80px;
   }}
 
   #MainMenu, footer, header {{ visibility: hidden; }}
@@ -443,12 +452,15 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ─── HEADER CARD ──────────────────────────────────────────────────────────────
+# ─── HEADER CARD ──────────────────────────────────────────────────────────────
 st.markdown(f"""
-<div class="bmb-header-card">
-  <img src="data:image/png;base64,{logo_b64}" alt="Blue Moon Botanics">
+<div class="bmb-card" style="text-align:center;padding:1.2rem 1.5rem 1rem;">
+  <div class="bmb-header-card">
+    <img src="data:image/png;base64,{logo_b64}" alt="Blue Moon Botanics">
+  </div>
   <a class="bmb-about-link" href="?tab=about">✦ About</a>
 </div>
-""", unsafe_allow_html=True)
+""", unsafe_allow_html=True))
 
 # ─── CONFIG & HELPERS ─────────────────────────────────────────────────────────
 SETTINGS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "user_settings.json")
@@ -799,6 +811,7 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
         )
 
 # ─── TABS ─────────────────────────────────────────────────────────────────────
+st.markdown('<div class="bmb-card">', unsafe_allow_html=True)
 tab_manual, tab_collection, tab_june, tab_about = st.tabs(["Add a Plant", "My Collection", "✦ June", "✦ About"])
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1185,3 +1198,4 @@ with tab_about:
 
     </div>
     """, unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)

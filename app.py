@@ -839,7 +839,7 @@ with tab_manual:
             </div>
             """, unsafe_allow_html=True)
             qi += 1
-            time.sleep(3)
+            time.sleep(6)
 
         quote_slot.empty()
         thread.join()

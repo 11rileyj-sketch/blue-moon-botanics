@@ -7,13 +7,13 @@ import urllib.parse
 import base64
 import random
 from plant_intake import run_intake, load_manifest, load_cache
-from assets import get_bg_base64, get_placeholder_base64
+from assets import get_bg_base64, get_placeholder_base64, get_logo_base64
 from image_search import get_plant_image, build_wsrv_url
 
 # ─── PAGE CONFIG ──────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="Blue Moon Botanics",
-    page_icon="🌱",
+    page_icon="favicon.png",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
@@ -21,6 +21,7 @@ st.set_page_config(
 # ─── STYLES ───────────────────────────────────────────────────────────────────
 bg_image = get_bg_base64()
 placeholder_b64 = get_placeholder_base64()
+logo_b64 = get_logo_base64()
 
 st.markdown(f"""
 <style>
@@ -415,8 +416,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ─── HEADER ───────────────────────────────────────────────────────────────────
-st.markdown('<div class="bmb-wordmark">🌱 Blue Moon Botanics</div>', unsafe_allow_html=True)
-st.markdown('<div class="bmb-tagline">Plant care, done right</div>', unsafe_allow_html=True)
+st.markdown(f'<img src="data:image/png;base64,{logo_b64}" style="width:100%;max-width:740px;display:block;margin:0 auto 1.5rem;" alt="Blue Moon Botanics">', unsafe_allow_html=True)
 
 # ─── CONFIG & HELPERS ─────────────────────────────────────────────────────────
 SETTINGS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "user_settings.json")

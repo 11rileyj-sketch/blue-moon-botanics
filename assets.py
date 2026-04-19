@@ -22,3 +22,9 @@ def get_placeholder_base64(file_path="plant_placeholder.png"):
     except Exception:
         pass
     return ""
+
+@st.cache_data
+def get_logo_base64():
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "botanicslogo.png")
+    with open(path, "rb") as f:
+        return base64.b64encode(f.read()).decode()

@@ -644,23 +644,8 @@ with tab_collection:
         )
 
         if selected_user:
-            sort_option = st.selectbox(
-                "Sort by",
-                options=["Date Added (Newest)", "Date Added (Oldest)", "Name (A–Z)", "Name (Z–A)"],
-                key="collection_sort"
-            )
             with st.spinner(f"Loading {selected_user}'s plants..."):
                 records = fetch_collection(selected_user)
-
-            if records:
-                if sort_option == "Name (A–Z)":
-                   records.sort(key=lambda r: (r.get("fields", {}).get("Nickname") or r.get("fields", {}).get("Species", "")).lower())
-                elif sort_option == "Name (Z–A)":
-                   records.sort(key=lambda r: (r.get("fields", {}).get("Nickname") or r.get("fields", {}).get("Species", "")).lower(), reverse=True)
-                elif sort_option == "Date Added (Newest)":
-                   records.sort(key=lambda r: r.get("createdTime", ""), reverse=True)
-                elif sort_option == "Date Added (Oldest)":
-                   records.sort(key=lambda r: r.get("createdTime", "")) 
 
             if not records:
                 st.markdown(
@@ -669,6 +654,20 @@ with tab_collection:
                     unsafe_allow_html=True
                 )
             else:
+                sort_option = st.selectbox(
+                    "Sort by",
+                    options=["Date Added (Newest)", "Date Added (Oldest)", "Name (A–Z)", "Name (Z–A)"],
+                    key="collection_sort"
+                )
+                if sort_option == "Name (A–Z)":
+                    records.sort(key=lambda r: (r.get("fields", {}).get("Nickname") or r.get("fields", {}).get("Species", "")).lower())
+                elif sort_option == "Name (Z–A)":
+                    records.sort(key=lambda r: (r.get("fields", {}).get("Nickname") or r.get("fields", {}).get("Species", "")).lower(), reverse=True)
+                elif sort_option == "Date Added (Newest)":
+                    records.sort(key=lambda r: r.get("createdTime", ""), reverse=True)
+                elif sort_option == "Date Added (Oldest)":
+                    records.sort(key=lambda r: r.get("createdTime", ""))
+
                 count = len(records)
                 st.markdown(
                     f'<div class="collection-count">'

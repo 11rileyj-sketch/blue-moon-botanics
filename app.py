@@ -639,7 +639,17 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
             st.image(photo_url, use_container_width=True)
             record_id = payload.get("record_id")
             if record_id:
-                st.markdown('<div class="camera-btn-wrap">', unsafe_allow_html=True)
+                st.markdown(f"""
+                <style>
+                div[data-testid="stButton"] button[kind="secondaryFormSubmit"],
+                div[data-testid="stButton"]:has(button) button {{
+                    background-color: #4CBB17 !important;
+                    color: white !important;
+                    border: none !important;
+                }}
+                </style>
+                <div class="camera-btn-wrap">
+                """, unsafe_allow_html=True)
                 if st.button("📷", key=f"cam_{record_id}", help="Update Photo", use_container_width=True):
                     with st.spinner("Searching for a photo..."):
                         new_url = update_specimen_photo(

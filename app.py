@@ -442,7 +442,13 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown(f'<img src="data:image/png;base64,{logo_b64}" style="width:100%;max-width:740px;display:block;margin:0 auto 1.5rem;" alt="Blue Moon Botanics">', unsafe_allow_html=True)
+# ─── HEADER CARD ──────────────────────────────────────────────────────────────
+st.markdown(f"""
+<div class="bmb-header-card">
+  <img src="data:image/png;base64,{logo_b64}" alt="Blue Moon Botanics">
+  <a class="bmb-about-link" href="?tab=about">✦ About</a>
+</div>
+""", unsafe_allow_html=True)
 
 # ─── CONFIG & HELPERS ─────────────────────────────────────────────────────────
 SETTINGS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "user_settings.json")

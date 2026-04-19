@@ -429,6 +429,16 @@ def get_location():
 
 location = get_location()
 
+def load_quotes():
+    quotes_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "quotes.json")
+    try:
+        with open(quotes_path) as f:
+            return json.load(f)
+    except Exception:
+        return [{"text": "Good things take time.", "attribution": ""}]
+
+QUOTES = load_quotes()
+
 # ─── AIRTABLE HELPERS ─────────────────────────────────────────────────────────
 def airtable_headers():
     return {
@@ -799,10 +809,43 @@ with tab_manual:
         run_mode = 'full' if run_btn else None
 
     if run_mode and plant_name.strip():
-        with st.spinner(f"Looking up {plant_name}..."):
-            payload, log = run_intake(plant_name.strip(), location, mode=run_mode, beta_user=intake_user)
-            if payload:
-                payload["beta_user"] = intake_user
+        import threading, time
+
+        result_holder = {"payload": None, "log": []}
+
+        def _run():
+            p, l = run_intake(plant_name.strip(), location, mode=run_mode, beta_user=intake_user)
+            if p:
+                p["beta_user"] = intake_user
+            result_holder["payload"] = p
+            result_holder["log"]     = l
+
+        thread = threading.Thread(target=_run, daemon=True)
+        thread.start()
+
+        quote_slot = st.empty()
+        quote_pool = QUOTES.copy()
+        random.shuffle(quote_pool)
+        qi = 0
+
+        while thread.is_alive():
+            q = quote_pool[qi % len(quote_pool)]
+            attr = f"— {q['attribution']}" if q.get("attribution") else ""
+            quote_slot.markdown(f"""
+            <div class="quote-spinner-wrap">
+                <div class="quote-spinner-icon">🌱</div>
+                <div class="quote-text">{q['text']}</div>
+                <div class="quote-attr">{attr}</div>
+            </div>
+            """, unsafe_allow_html=True)
+            qi += 1
+            time.sleep(3)
+
+        quote_slot.empty()
+        thread.join()
+
+        payload = result_holder["payload"]
+        log     = result_holder["log"]
 
         with st.expander("intake log", expanded=False):
             log_html = "".join(f'<div class="log-line">{line}</div>' for line in log)

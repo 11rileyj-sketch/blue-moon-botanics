@@ -1,0 +1,158 @@
+{
+  "disambiguation_records": [
+    {
+      "id": "disambig_001",
+      "group_name": "Pothos / Epipremnum / Scindapsus",
+      "family": "Araceae",
+      "genus": ["Epipremnum", "Scindapsus"],
+      "care_profile_group": "aroid_tropical",
+      "common_names": [
+        "pothos",
+        "golden pothos",
+        "devil's ivy",
+        "silver pothos",
+        "satin pothos"
+      ],
+      "possible_species": [
+        {
+          "name": "Epipremnum aureum (Golden, Marble Queen, N'Joy, Manjula, Neon, Pearls & Jade, Cebu Blue)",
+          "thumbnail_url": null
+        },
+        {
+          "name": "Scindapsus pictus (Silver Splash, Exotica, Jade Satin)",
+          "thumbnail_url": null
+        },
+        {
+          "name": "Scindapsus treubii (Treubii 'Black', Treubii 'Moonlight')",
+          "thumbnail_url": null
+        }
+      ],
+      "disambiguation_question": "Just to make sure I pull the right info — is your plant solid green or neon yellow, classically marbled white, or does it have more of a silvery/metallic sheen to the leaves?",
+      "visual_cues": {
+        "Epipremnum aureum": "heart-shaped leaves, matte finish, variegation in white, yellow, or lime green",
+        "Scindapsus pictus": "slightly thicker leaves, distinctly silver or metallic splotching, velvety texture",
+        "Scindapsus treubii": "narrow elongated leaves, very dark green to near-black, minimal pattern"
+      },
+      "care_divergence_flag": "medium",
+      "care_divergence_notes": "Epipremnum is more forgiving with water and light; Scindapsus prefers to dry out more and hates overwatering more aggressively. Not night-and-day but meaningful for fertilizer cadence.",
+      "reclassification_note": "True botanical 'Pothos' is a separate genus entirely — rarely sold as houseplants. Everything the hobby calls 'pothos' is Epipremnum or Scindapsus.",
+      "source_reference": "Epipremnum & Scindapsus print — Aaron Apsley (@apsley_watercolor)"
+    },
+    {
+      "id": "disambig_002",
+      "group_name": "Marantaceae (Prayer Plants)",
+      "family": "Marantaceae",
+      "genus": ["Maranta", "Goeppertia", "Stromanthe", "Ctenanthe"],
+      "care_profile_group": "humidity_dependent",
+      "common_names": [
+        "prayer plant",
+        "calathea",
+        "rattlesnake plant",
+        "peacock plant",
+        "zebra plant",
+        "cathedral plant",
+        "maranta"
+      ],
+      "possible_species": [
+        {
+          "name": "Maranta leuconeura kerchoveana",
+          "thumbnail_url": null
+        },
+        {
+          "name": "Maranta leuconeura erythroneura (Red Prayer Plant)",
+          "thumbnail_url": null
+        },
+        {
+          "name": "Goeppertia ornata (formerly Calathea ornata)",
+          "thumbnail_url": null
+        },
+        {
+          "name": "Goeppertia lancifolia (formerly Calathea lancifolia — Rattlesnake)",
+          "thumbnail_url": null
+        },
+        {
+          "name": "Goeppertia roseopicta (formerly Calathea roseopicta)",
+          "thumbnail_url": null
+        },
+        {
+          "name": "Goeppertia zebrina (formerly Calathea zebrina)",
+          "thumbnail_url": null
+        },
+        {
+          "name": "Goeppertia makoyana (formerly Calathea makoyana — Peacock)",
+          "thumbnail_url": null
+        },
+        {
+          "name": "Stromanthe sanguinea",
+          "thumbnail_url": null
+        },
+        {
+          "name": "Ctenanthe spp.",
+          "thumbnail_url": null
+        }
+      ],
+      "disambiguation_question": "Prayer plants are a whole family — can you describe the leaf pattern? Red or pink veins point one direction, bold pinstripes another, and rattlesnake-style spots are something else entirely.",
+      "visual_cues": {
+        "Maranta leuconeura kerchoveana": "pale green with dark brown blotches along midrib — 'rabbit tracks'",
+        "Maranta leuconeura erythroneura": "deep green with vivid red veins, herringbone pattern",
+        "Goeppertia ornata": "dark green with thin pink/white pinstripes radiating from midrib",
+        "Goeppertia lancifolia": "long narrow leaves, dark oval spots on light green — rattlesnake",
+        "Goeppertia roseopicta": "broad oval, bold concentric ring pattern, often with pink blush",
+        "Stromanthe sanguinea": "lance-shaped, cream and green variegation on top, magenta underside"
+      },
+      "care_divergence_flag": "low",
+      "care_divergence_notes": "True Maranta is slightly more forgiving than Goeppertia. Stromanthe is the diva of the group. All share humidity preference and dislike of fluoride/chlorine in tap water.",
+      "reclassification_note": "Most plants sold as 'Calathea' are now correctly classified as Goeppertia following a 2012 reclassification. Nursery tags still widely use Calathea. Maranta is a distinct genus in the same family (Marantaceae) — not a Calathea at all.",
+      "source_reference": "Marantaceae identification print — The Smart Local"
+    },
+    {
+      "id": "disambig_003",
+      "group_name": "Ficus",
+      "family": "Moraceae",
+      "genus": ["Ficus"],
+      "care_profile_group": "finicky_tropical_tree",
+      "common_names": [
+        "ficus",
+        "fig plant",
+        "fiddle leaf fig",
+        "rubber plant",
+        "weeping fig",
+        "benjamin fig"
+      ],
+      "possible_species": [
+        {
+          "name": "Ficus lyrata (Fiddle Leaf Fig)",
+          "thumbnail_url": null
+        },
+        {
+          "name": "Ficus elastica (Rubber Plant — Burgundy, Ruby, Tineke)",
+          "thumbnail_url": null
+        },
+        {
+          "name": "Ficus benjamina (Weeping Fig)",
+          "thumbnail_url": null
+        },
+        {
+          "name": "Ficus triangularis (Triangle Fig)",
+          "thumbnail_url": null
+        },
+        {
+          "name": "Ficus pumila (Creeping Fig)",
+          "thumbnail_url": null
+        }
+      ],
+      "disambiguation_question": "Ficus is a big genus with pretty different care needs depending on which one you have. Does it have huge violin-shaped leaves, wide waxy burgundy/green leaves, small glossy leaves on drooping branches, or something else?",
+      "visual_cues": {
+        "Ficus lyrata": "very large, violin/fiddle-shaped leaves, wavy edges, prominent veining",
+        "Ficus elastica": "large oval leaves, thick and waxy, often deep burgundy or variegated cream",
+        "Ficus benjamina": "small ovate leaves, arching/weeping branch structure, prolific leaf drop when stressed",
+        "Ficus triangularis": "small triangular to heart-shaped leaves, compact growth",
+        "Ficus pumila": "tiny rounded leaves on vining/creeping stems, completely different habit — groundcover or wall creeper, not a specimen plant"
+      },
+      "care_divergence_flag": "high",
+      "care_divergence_notes": "Lyrata needs bright indirect light and hates being moved. Benjamina drops leaves at the slightest draft or relocation. Elastica is the most forgiving of the group. Pumila is a completely different use case.",
+      "reclassification_note": null,
+      "source_reference": null
+    }
+  ]
+}

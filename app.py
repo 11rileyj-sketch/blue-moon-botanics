@@ -569,17 +569,34 @@ with tab_manual:
     in_cache   = plant_name and plant_name.strip().lower() in load_cache()
 
     if already_in:
-        st.markdown(
-            f'<div class="warn-box">⚠️ <strong>{plant_name}</strong> is already in your library. '
-            f'Use the options below to re-run or update.</div>',
-            unsafe_allow_html=True
+        in_user_collection = any(
+            (r.get("fields", {}).get("Nickname") or r.get("fields", {}).get("Species", "")).lower() == plant_name.lower()
+            for r in fetch_collection(intake_user)
         )
-        col1, col2 = st.columns(2)
-        with col1:
-            rerun_btn  = st.button("↺ Re-run Full Intake", key="rerun")
-        with col2:
-            update_btn = st.button("↑ Update & Refresh", key="update")
-        run_mode = 'full' if rerun_btn else 'update' if update_btn else None
+        if in_user_collection:
+            st.markdown(
+                f'<div class="warn-box">⚠️ <strong>{plant_name}</strong> is already in your collection. '
+                f'Use the options below to re-run or update the species data.</div>',
+                unsafe_allow_html=True
+            )
+            col1, col2 = st.columns(2)
+            with col1:
+                rerun_btn = st.button("↺ Re-run Full Intake", key="rerun")
+            with col2:
+                update_btn = st.button("↑ Update & Refresh", key="update")
+            run_mode = 'full' if rerun_btn else 'update' if update_btn else None
+        else:
+            st.markdown(
+                f'<div class="warn-box">✅ Great news — <strong>{plant_name}</strong> is already in our database. '
+                f'Add it to your collection or refresh the species data.</div>',
+                unsafe_allow_html=True
+            )
+            col1, col2 = st.columns(2)
+            with col1:
+                add_btn = st.button("🌿 Add to My Collection", key="add_existing")
+            with col2:
+                update_btn = st.button("↑ Update Species Data", key="update")
+            run_mode = 'cache' if add_btn else 'update' if update_btn else None
 
     elif in_cache:
         st.markdown(
@@ -635,8 +652,6 @@ with tab_collection:
             unsafe_allow_html=True
         )
     else:
-        if st.session_state.get("intake_user") in beta_users:
-            st.session_state["collection_user"] = st.session_state["intake_user"]
         selected_user = st.selectbox(
             "Whose collection?",
             options=beta_users,

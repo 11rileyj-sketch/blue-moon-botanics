@@ -864,9 +864,7 @@ if st.query_params.get("about") == "1":
     <p>The app works. The care data is real. But there are rough edges, missing features, and more
     than a few things on the list that haven't been built yet.</p>
     <p>Good plant care isn't rushed. Neither is this.</p>
-    <p>Expect updates of every stripe — from the functional to the cosmetic, and eventually dipping
-    into community-based features. If something feels broken or missing, it probably is, and it's
-    probably already on the list. If it's not, tell me.</p>
+    <p>Expect updates of every stripe: functional, cosmetic, and eventually community-based features. If something feels broken or missing, it probably is, and it's probably already on the list. If it's not, tell me.</p>
     <p>Thanks for being here early.</p>
 
     <hr style="border-color:#c8d8b0;margin:1.2rem 0;">

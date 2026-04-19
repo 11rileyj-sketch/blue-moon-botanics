@@ -959,7 +959,7 @@ with tab_collection:
                         }
 
                         st.markdown("---")
-                        render_result_card(card_payload, show_added_confirm=False, record_id=record_id)
+                        render_result_card(card_payload, show_added_confirm=False)
                         st.markdown(
                             '<script>document.getElementById("care-card-anchor").scrollIntoView({behavior:"smooth"});</script>',
                             unsafe_allow_html=True

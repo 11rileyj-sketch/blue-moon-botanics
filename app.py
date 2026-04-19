@@ -1043,3 +1043,38 @@ with tab_collection:
                         if st.button(f"🌿 {tile['common']} →", key=f"tile_{tile['record']['id']}"):
                             st.session_state["selected_plant"] = tile["record"]["id"]
                             st.rerun()
+
+                # ── Care card for selected plant ──────────────────────────────
+                st.markdown('<div id="care-card-anchor"></div>', unsafe_allow_html=True)
+                selected_id = st.session_state.get("selected_plant")
+                if selected_id:
+                    match = next((t for t in tiles if t["record"]["id"] == selected_id), None)
+                    if match:
+                        f  = match["f"]
+                        sp = match["sp"]
+                        common = match["common"]
+                        record_id = match["record"]["id"]
+
+                        card_payload = {
+                            "record_id":           record_id,
+                            "common_name":         common,
+                            "scientific_name":     sp.get("Scientific Name", f.get("Species", "")),
+                            "cultivar":            sp.get("Cultivar", ""),
+                            "care_summary":        "",
+                            "care_notes":          sp.get("Care Notes", ""),
+                            "sun":                 sp.get("Sunlight", f.get("Lighting", "")),
+                            "water":               sp.get("Water", ""),
+                            "cycle":               sp.get("Cycle", f.get("Plant Age", "")),
+                            "photo_url":           match["photo_url"],
+                            "fertilizer_baseline": sp.get("Fertilizer Baseline", f.get("Fertilizer Baseline", "")),
+                            "local_authority":     sp.get("Local Authority", ""),
+                            "expert_link":         sp.get("Expert Resource", ""),
+                            "flowering":           sp.get("Flowering", False),
+                        }
+
+                        st.markdown("---")
+                        render_result_card(card_payload, show_added_confirm=False)
+                        st.markdown(
+                            '<script>document.getElementById("care-card-anchor").scrollIntoView({behavior:"smooth"});</script>',
+                            unsafe_allow_html=True
+                        )            

@@ -305,6 +305,14 @@ st.markdown(f"""
       color: #7a9a5a;
       margin-bottom: 1.2rem;
   }}
+  .tile-grid-hint {{
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #7a9a5a;
+      margin-bottom: 1rem;
+      font-style: italic;
+  }}
 
   hr {{ border-color: #c8d8b0; margin: 1.2rem 0; }}
 
@@ -1009,54 +1017,29 @@ with tab_collection:
                     })
 
                 # ── Render grid ───────────────────────────────────────────────
+                st.markdown(
+                    '<div class="tile-grid-hint">Click a plant\'s name for full care information.</div>',
+                    unsafe_allow_html=True
+                )
                 cols = st.columns(2)
                 for i, tile in enumerate(tiles):
                     with cols[i % 2]:
                         selected = st.session_state.get("selected_plant") == tile["record"]["id"]
                         tile_class = "plant-tile selected" if selected else "plant-tile"
                         img_src = tile["photo_url"] if tile["photo_url"] else f"data:image/png;base64,{placeholder_b64}"
+                        sun_emoji, sun_tip     = normalize_sun(tile["sp"].get("Sunlight", ""))
+                        water_emoji, water_tip = normalize_water(tile["sp"].get("Water", ""))
+                        care_preview = ""
+                        if sun_emoji:
+                            care_preview += f'<span title="{sun_tip}">{sun_emoji}</span>'
+                        if water_emoji:
+                            care_preview += f'<span title="{water_tip}" style="margin-left:0.4rem">{water_emoji}</span>'
                         st.markdown(f"""
                         <div class="{tile_class}" id="tile-{tile['record']['id']}">
                             <img src="{img_src}" onerror="this.src='data:image/png;base64,{placeholder_b64}'">
-                            <div class="plant-tile-label">🌿 {tile['common']}</div>
+                            <div class="plant-tile-label">{care_preview}</div>
                         </div>
                         """, unsafe_allow_html=True)
                         if st.button(f"🌿 {tile['common']} →", key=f"tile_{tile['record']['id']}"):
                             st.session_state["selected_plant"] = tile["record"]["id"]
                             st.rerun()
-
-                # ── Care card for selected plant ───────────────────────────────
-                st.markdown('<div id="care-card-anchor"></div>', unsafe_allow_html=True)
-                selected_id = st.session_state.get("selected_plant")
-                if selected_id:
-                    match = next((t for t in tiles if t["record"]["id"] == selected_id), None)
-                    if match:
-                        f  = match["f"]
-                        sp = match["sp"]
-                        common = match["common"]
-                        record_id = match["record"]["id"]
-
-                        card_payload = {
-                            "record_id":           record_id,
-                            "common_name":         common,
-                            "scientific_name":     sp.get("Scientific Name", f.get("Species", "")),
-                            "cultivar":            sp.get("Cultivar", ""),
-                            "care_summary":        "",
-                            "care_notes":          sp.get("Care Notes", ""),
-                            "sun":                 sp.get("Sunlight", f.get("Lighting", "")),
-                            "water":               sp.get("Water", ""),
-                            "cycle":               sp.get("Cycle", f.get("Plant Age", "")),
-                            "photo_url":           match["photo_url"],
-                            "fertilizer_baseline": sp.get("Fertilizer Baseline", f.get("Fertilizer Baseline", "")),
-                            "local_authority":     sp.get("Local Authority", ""),
-                            "expert_link":         sp.get("Expert Resource", ""),
-                            "flowering":           sp.get("Flowering", False),
-                        }
-
-                        st.markdown("---")
-                        render_result_card(card_payload, show_added_confirm=False)
-                        st.markdown(
-                            '<script>document.getElementById("care-card-anchor").scrollIntoView({behavior:"smooth"});</script>',
-                            unsafe_allow_html=True
-                        )                                
-

@@ -604,6 +604,8 @@ with tab_manual:
     else:
         intake_user = "Justin"
 
+    run_mode = None
+
     st.markdown("<div style='margin-top:0.8rem'></div>", unsafe_allow_html=True)
 
     plant_name = st.text_input(

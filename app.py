@@ -39,22 +39,22 @@ st.markdown(f"""
       background-size: 400px auto;
   }}
 
-  /* Container is now transparent — cards handle their own backgrounds */
+  /* Content panel floats over tile */
   .block-container {{
-      background-color: transparent !important;
-      border-radius: 0 !important;
+      background-color: rgba(252, 250, 245, 0.97) !important;
+      border-radius: 12px !important;
       padding: 80px 2.5rem 3rem !important;
       max-width: 740px;
-      box-shadow: none !important;
+      box-shadow: 0 2px 24px rgba(30,45,20,0.12);
   }}
 
-  /* Shared card style — used by header and intake */
-  .bmb-card {{
-      background-color: rgba(252, 250, 245, 0.97);
-      border-radius: 12px;
-      box-shadow: 0 2px 24px rgba(30,45,20,0.12);
-      padding: 1.5rem 2rem;
-      margin-bottom: 80px;
+  /* Hex tile divider — fakes a gap between header and intake */
+  .bmb-hex-divider {{
+      background-image: url('data:image/png;base64,{bg_image}');
+      background-repeat: repeat;
+      background-size: 400px auto;
+      height: 80px;
+      margin: 0 -2.5rem;
   }}
 
   #MainMenu, footer, header {{ visibility: hidden; }}
@@ -66,7 +66,7 @@ st.markdown(f"""
       border: 2px solid #4CBB17;
       box-shadow: 0 2px 24px rgba(30,45,20,0.12);
       padding: 1.2rem 1.5rem 1rem;
-      margin-bottom: 80px;
+      margin-bottom: 0;
       text-align: center;
   }}
   .bmb-header-card img {{
@@ -452,13 +452,10 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ─── HEADER CARD ──────────────────────────────────────────────────────────────
-# ─── HEADER CARD ──────────────────────────────────────────────────────────────
 st.markdown(f"""
-<div class="bmb-card" style="text-align:center;padding:1.2rem 1.5rem 1rem;">
-  <div class="bmb-header-card">
-    <img src="data:image/png;base64,{logo_b64}" alt="Blue Moon Botanics">
-  </div>
-  <a class="bmb-about-link" href="?tab=about">✦ About</a>
+<div class="bmb-header-card">
+  <img src="data:image/png;base64,{logo_b64}" alt="Blue Moon Botanics">
+  <a class="bmb-about-link" href="#" onclick="window.parent.document.querySelectorAll('[data-baseweb=tab]')[3].click();return false;">✦ About</a>
 </div>
 """, unsafe_allow_html=True)
 
@@ -810,8 +807,10 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
             unsafe_allow_html=True
         )
 
+# ─── HEX DIVIDER ──────────────────────────────────────────────────────────────
+st.markdown('<div class="bmb-hex-divider"></div>', unsafe_allow_html=True)
+
 # ─── TABS ─────────────────────────────────────────────────────────────────────
-st.markdown('<div class="bmb-card">', unsafe_allow_html=True)
 tab_manual, tab_collection, tab_june, tab_about = st.tabs(["Add a Plant", "My Collection", "✦ June", "✦ About"])
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1198,4 +1197,4 @@ with tab_about:
 
     </div>
     """, unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    

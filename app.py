@@ -347,12 +347,52 @@ st.markdown(f"""
       text-overflow: ellipsis;
   }
 
+  /* ── Photo card grid ─────────────────────────────────────────── */
+  .plant-grid {{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+  }}
+  .plant-tile {{
+      background: #ffffff;
+      border: 1px solid #c8d8b0;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: box-shadow 0.2s, border-color 0.2s;
+  }}
+  .plant-tile:hover {{
+      box-shadow: 0 4px 16px rgba(30,45,20,0.13);
+      border-color: #4CBB17;
+  }}
+  .plant-tile.selected {{
+      border-color: #4CBB17;
+      box-shadow: 0 0 0 2px rgba(76,187,23,0.25);
+  }}
+  .plant-tile img {{
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      display: block;
+  }}
+  .plant-tile-label {{
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: #2d5a1b;
+      padding: 0.5rem 0.7rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+  }}
+
   /* ── Camera icon button ──────────────────────────────────────── */
-  .camera-btn-wrap {
+  .camera-btn-wrap {{
       text-align: center;
       margin: 0.4rem 0 0.8rem;
-  }
-  .camera-btn {
+  }}
+  .camera-btn {{
       position: relative;
       display: inline-block;
       background: rgba(255,255,255,0.85);
@@ -364,9 +404,9 @@ st.markdown(f"""
       font-size: 1rem;
       cursor: pointer;
       transition: background 0.2s, border-color 0.2s;
-  }
-  .camera-btn:hover { background: #eaf4e0; border-color: #4CBB17; }
-  .camera-btn .tooltip {
+  }}
+  .camera-btn:hover {{ background: #eaf4e0; border-color: #4CBB17; }}
+  .camera-btn .tooltip {{
       visibility: hidden;
       opacity: 0;
       background: #2d5a1b;
@@ -383,11 +423,11 @@ st.markdown(f"""
       white-space: nowrap;
       transition: opacity 0.15s;
       pointer-events: none;
-  }
-  .camera-btn:hover .tooltip {
+  }}
+  .camera-btn:hover .tooltip {{
       visibility: visible;
       opacity: 1;
-  }
+  }}
 
   /* ── Rotating quotes ─────────────────────────────────────────── */
   .quote-spinner-wrap {{

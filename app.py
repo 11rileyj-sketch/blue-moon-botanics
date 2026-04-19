@@ -412,7 +412,60 @@ def update_specimen_photo(record_id, plant_name, common_name, scientific_name):
     except:
         return None
     
+def add_existing_to_collection(plant_name, beta_user):
+    """Adds a species already in the Species Library to a user's collection.
+    Bypasses Gemini and image search entirely — pulls from Species Library directly."""
+    sp = fetch_species(plant_name)
+    if not sp:
+        return None, ["⚠️ Species not found in library. Try a full intake instead."]
     
+    log = []
+    log.append(f"📚 Found '{plant_name}' in Species Library. Skipping Gemini.")
+    
+    sun_icons   = {"Full Sun": "☀️☀️☀️", "Partial Sun": "☀️☀️",
+                   "Indirect Light": "☀️", "Low Light": "☁️"}
+    water_icons = {"Low": "💧", "Medium": "💧💧", "High": "💧💧💧"}
+
+    raw_tips   = sp.get("Care Notes", "")
+    photo_url  = sp.get("Photo URL", "")
+
+    payload = {
+        "common_name":         sp.get("Common Name", plant_name),
+        "scientific_name":     sp.get("Scientific Name", ""),
+        "cultivar":            sp.get("Cultivar", ""),
+        "care_summary":        "",
+        "care_notes":          raw_tips,
+        "local_authority":     sp.get("Local Authority", ""),
+        "expert_link":         sp.get("Expert Resource", ""),
+        "sun":                 sun_icons.get(sp.get("Sunlight", ""), "☀️"),
+        "water":               water_icons.get(sp.get("Water", ""), "💧"),
+        "cycle":               sp.get("Cycle", ""),
+        "flowering":           sp.get("Flowering", False),
+        "photo_url":           photo_url,
+        "fertilizer_baseline": sp.get("Fertilizer Baseline", ""),
+        "climate_zone":        f"Zip: {location}",
+        "model_used":          "species_library",
+        "script_version":      "app_direct",
+        "input_name":          plant_name,
+        "raw_json":            "",
+        "airtable_record_id":  "",
+        "beta_user":           beta_user
+    }
+
+    log.append(f"🚀 Firing webhook...")
+    try:
+        make_url = os.environ.get("MAKE_WEBHOOK_URL") or get_config("MAKE_WEBHOOK_URL")
+        r = requests.post(make_url, json=payload)
+        log.append(f"   Webhook status: {r.status_code}")
+        if r.status_code == 200:
+            log.append(f"✅ SUCCESS: {payload['common_name']} added to {beta_user}'s collection.")
+            return payload, log
+        else:
+            log.append(f"❌ Webhook failed: {r.status_code}")
+            return None, log
+    except Exception as e:
+        log.append(f"❌ Error: {e}")
+        return None, log   
 
 # ─── SHARED CARD RENDERER ─────────────────────────────────────────────────────
 def inject_emojis(care_notes, sun, water):
@@ -596,7 +649,19 @@ with tab_manual:
                 add_btn = st.button("🌿 Add to My Collection", key="add_existing")
             with col2:
                 update_btn = st.button("↑ Update Species Data", key="update")
-            run_mode = 'cache' if add_btn else 'update' if update_btn else None
+            
+            if add_btn:
+                with st.spinner(f"Adding {plant_name} to your collection..."):
+                    payload, log = add_existing_to_collection(plant_name, intake_user)
+                with st.expander("intake log", expanded=False):
+                    log_html = "".join(f'<div class="log-line">{line}</div>' for line in log)
+                    st.markdown(log_html, unsafe_allow_html=True)
+                if payload:
+                    render_result_card(payload, show_added_confirm=True, compact=True)
+                else:
+                    st.markdown('<div class="error-box">❌ Could not add plant. Check the log above.</div>', unsafe_allow_html=True)
+            elif update_btn:
+                run_mode = 'update'
 
     elif in_cache:
         st.markdown(
@@ -652,9 +717,12 @@ with tab_collection:
             unsafe_allow_html=True
         )
     else:
+        default_user = st.session_state.get("active_user", beta_users[0])
+        default_index = beta_users.index(default_user) if default_user in beta_users else 0
         selected_user = st.selectbox(
             "Whose collection?",
             options=beta_users,
+            index=default_index,
             key="collection_user"
         )
 

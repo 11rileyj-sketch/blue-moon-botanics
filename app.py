@@ -373,6 +373,15 @@ st.markdown(f"""
       margin-bottom: 0.8rem;
       animation: spin-slow 3s linear infinite;
   }}
+  .quote-loading-label {{
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #7a9a5a;
+      margin-bottom: 1.2rem;
+  }}
   @keyframes spin-slow {{
       from {{ transform: rotate(0deg); }}
       to   {{ transform: rotate(360deg); }}
@@ -834,12 +843,13 @@ with tab_manual:
             quote_slot.markdown(f"""
             <div class="quote-spinner-wrap">
                 <div class="quote-spinner-icon">🌱</div>
+                <div class="quote-loading-label">Digging around for your plant…</div>
                 <div class="quote-text">{q['text']}</div>
                 <div class="quote-attr">{attr}</div>
             </div>
             """, unsafe_allow_html=True)
             qi += 1
-            time.sleep(6)
+            time.sleep(9)
 
         quote_slot.empty()
         thread.join()

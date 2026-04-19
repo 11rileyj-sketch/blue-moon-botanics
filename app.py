@@ -390,20 +390,20 @@ st.markdown(f"""
   }
 
   /* ── Rotating quotes ─────────────────────────────────────────── */
-  .quote-spinner-wrap {
+  .quote-spinner-wrap {{
       text-align: center;
       padding: 2rem 1rem;
-  }
-  .quote-spinner-icon {
+  }}
+  .quote-spinner-icon {{
       font-size: 2rem;
       margin-bottom: 0.8rem;
       animation: spin-slow 3s linear infinite;
-  }
-  @keyframes spin-slow {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
-  }
-  .quote-text {
+  }}
+  @keyframes spin-slow {{
+      from {{ transform: rotate(0deg); }}
+      to   {{ transform: rotate(360deg); }}
+  }}
+  .quote-text {{
       font-family: 'Playfair Display', serif;
       font-style: italic;
       font-size: 1rem;
@@ -412,13 +412,13 @@ st.markdown(f"""
       max-width: 480px;
       margin: 0 auto 0.4rem;
       min-height: 3.5rem;
-  }
-  .quote-attr {
+  }}
+  .quote-attr {{
       font-size: 0.75rem;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: #7a9a5a;
-  }
+  }}
 
 </style>
 """, unsafe_allow_html=True)

@@ -1059,10 +1059,17 @@ with tab_collection:
                     unsafe_allow_html=True
                 )
             else:
-                sort_option = st.selectbox(
+                # ── Controls ──────────────────────────────────────────────────
+                search_query = st.text_input(
+                    "Search collection",
+                    placeholder="e.g. pothos, lemon lime...",
+                    key="collection_search"
+                )
+                sort_option = st.radio(
                     "Sort by",
                     options=["Date Added (Newest)", "Date Added (Oldest)", "Name (A–Z)", "Name (Z–A)"],
-                    key="collection_sort"
+                    key="collection_sort",
+                    index=0
                 )
                 if sort_option == "Name (A–Z)":
                     records.sort(key=lambda r: (r.get("fields", {}).get("Nickname") or r.get("fields", {}).get("Species", "")).lower())
@@ -1072,13 +1079,6 @@ with tab_collection:
                     records.sort(key=lambda r: r.get("createdTime", ""), reverse=True)
                 elif sort_option == "Date Added (Oldest)":
                     records.sort(key=lambda r: r.get("createdTime", ""))
-
-                count = len(records)
-                st.markdown(
-                    f'<div class="collection-count">'
-                    f'{count} plant{"s" if count != 1 else ""}</div>',
-                    unsafe_allow_html=True
-                )
 
                 # ── Build tile data ───────────────────────────────────────────
                 tiles = []
@@ -1097,11 +1097,72 @@ with tab_collection:
                         "photo_url": photo_url,
                     })
 
-                # ── Render grid ───────────────────────────────────────────────
+                if search_query:
+                    tiles = [t for t in tiles if search_query.lower() in t["common"].lower()]
+
+                count = len(tiles)
                 st.markdown(
-                    '<div class="tile-grid-hint">Click a plant\'s name for full care information.</div>',
+                    f'<div class="collection-count">'
+                    f'{count} plant{"s" if count != 1 else ""}</div>',
                     unsafe_allow_html=True
                 )
+
+                # ── Reserved card slot ────────────────────────────────────────
+                st.markdown('<div id="collection-card-anchor"></div>', unsafe_allow_html=True)
+                selected_id = st.session_state.get("selected_plant")
+                match = next((t for t in tiles if t["record"]["id"] == selected_id), None) if selected_id else None
+
+                if match:
+                    f  = match["f"]
+                    sp = match["sp"]
+                    common = match["common"]
+                    record_id = match["record"]["id"]
+                    card_payload = {
+                        "record_id":           record_id,
+                        "common_name":         common,
+                        "scientific_name":     sp.get("Scientific Name", f.get("Species", "")),
+                        "cultivar":            sp.get("Cultivar", ""),
+                        "care_notes":          sp.get("Care Notes", ""),
+                        "sun":                 sp.get("Sunlight", f.get("Lighting", "")),
+                        "water":               sp.get("Water", ""),
+                        "cycle":               sp.get("Cycle", f.get("Plant Age", "")),
+                        "photo_url":           match["photo_url"],
+                        "fertilizer_baseline": sp.get("Fertilizer Baseline", f.get("Fertilizer Baseline", "")),
+                        "local_authority":     sp.get("Local Authority", ""),
+                        "expert_link":         sp.get("Expert Resource", ""),
+                        "flowering":           sp.get("Flowering", False),
+                    }
+                    with st.container(border=True):
+                        render_result_card(card_payload, show_added_confirm=False)
+                    st.components.v1.html("""
+                    <script>
+                    setTimeout(function() {
+                        var d = window.parent.document;
+                        var anchor = d.getElementById('collection-card-anchor');
+                        if (anchor) {
+                            var wrapper = anchor.closest('[data-testid="stVerticalBlock"]')
+                                .querySelector('[data-testid="stVerticalBlockBorderWrapper"]');
+                            if (wrapper) {
+                                wrapper.style.background = '#fcfaf5';
+                                wrapper.style.border = '1px solid #c8d8b0';
+                                wrapper.style.borderRadius = '6px';
+                            }
+                            anchor.scrollIntoView({behavior:'smooth'});
+                        }
+                    }, 400);
+                    </script>
+                    """, height=0)
+                else:
+                    st.markdown("""
+                    <div class="june-intro">
+                    <p>Your collection lives here. Tap any plant to pull up its full care profile.</p>
+                    <p>The emojis on each tile are your at-a-glance care indicators — sun and water needs,
+                    always visible without clicking anything. Hover over them in the care card for a quick breakdown.</p>
+                    <p>New plants get added in the <strong>Add a Plant</strong> tab.</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                # ── Tile grid ─────────────────────────────────────────────────
                 cols = st.columns(2)
                 for i, tile in enumerate(tiles):
                     with cols[i % 2]:
@@ -1124,37 +1185,3 @@ with tab_collection:
                         if st.button(f"🌿 {tile['common']} →", key=f"tile_{tile['record']['id']}"):
                             st.session_state["selected_plant"] = tile["record"]["id"]
                             st.rerun()
-
-                # ── Care card for selected plant ──────────────────────────────
-                st.markdown('<div id="care-card-anchor"></div>', unsafe_allow_html=True)
-                selected_id = st.session_state.get("selected_plant")
-                if selected_id:
-                    match = next((t for t in tiles if t["record"]["id"] == selected_id), None)
-                    if match:
-                        f  = match["f"]
-                        sp = match["sp"]
-                        common = match["common"]
-                        record_id = match["record"]["id"]
-
-                        card_payload = {
-                            "record_id":           record_id,
-                            "common_name":         common,
-                            "scientific_name":     sp.get("Scientific Name", f.get("Species", "")),
-                            "cultivar":            sp.get("Cultivar", ""),
-                            "care_notes":          sp.get("Care Notes", ""),
-                            "sun":                 sp.get("Sunlight", f.get("Lighting", "")),
-                            "water":               sp.get("Water", ""),
-                            "cycle":               sp.get("Cycle", f.get("Plant Age", "")),
-                            "photo_url":           match["photo_url"],
-                            "fertilizer_baseline": sp.get("Fertilizer Baseline", f.get("Fertilizer Baseline", "")),
-                            "local_authority":     sp.get("Local Authority", ""),
-                            "expert_link":         sp.get("Expert Resource", ""),
-                            "flowering":           sp.get("Flowering", False),
-                        }
-
-                        st.markdown("---")
-                        render_result_card(card_payload, show_added_confirm=False)
-                        st.markdown(
-                            '<script>document.getElementById("care-card-anchor").scrollIntoView({behavior:"smooth"});</script>',
-                            unsafe_allow_html=True
-                        )

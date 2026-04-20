@@ -66,7 +66,7 @@ st.markdown(f"""
       background-color: rgba(252, 250, 245, 0.97);
       border-radius: 12px;
       box-shadow: 0 2px 24px rgba(30,45,20,0.12);
-      padding: 0 1.5rem 0;
+      padding: 12px 12px 0;
       margin-top: 0;
       margin-bottom: 0;
       text-align: center;
@@ -75,7 +75,7 @@ st.markdown(f"""
       border: 2px solid #4CBB17;
       border-radius: 8px;
       overflow: hidden;
-      margin-top: -10px;
+      margin-top: 0;
   }}
   .bmb-logo-border img {{
       width: 100%;
@@ -89,12 +89,12 @@ st.markdown(f"""
       font-weight: 500;
       letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: #7a9a5a;
+      color: #7a9a5a !important;
       text-decoration: none;
       display: block;
       margin: 20px 0;
   }}
-  .bmb-about-link:hover {{ color: #2d5a1b; }}
+  .bmb-about-link:hover {{ color: #2d5a1b !important; }}
 
   .bmb-wordmark {{
       font-family: 'Playfair Display', serif;
@@ -203,6 +203,18 @@ st.markdown(f"""
   .stButton > button:hover {{ background-color: #3da012; border: none; }}
   .stButton > button:active {{ background-color: #2d7a0e; }}
 
+  /* Ghost button variant — camera button only */
+  .btn-ghost > button {{
+      background-color: #fcfaf5;
+      color: #4CBB17;
+      border: 1.5px solid #4CBB17;
+  }}
+  .btn-ghost > button:hover {{
+      background-color: #f0ede4;
+      border-color: #3da012;
+      color: #3da012;
+  }}
+
   .input-helper {{
       font-size: 0.78rem;
       color: #7a9a5a;
@@ -224,16 +236,10 @@ st.markdown(f"""
       color: #7a9a5a;
       margin-bottom: 1rem;
   }}
-  .result-summary {{
-      font-size: 0.93rem;
-      color: #3a4a30;
-      line-height: 1.7;
-      margin-bottom: 1.2rem;
-  }}
   .stat-row {{
       display: flex;
       gap: 0.6rem;
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
       flex-wrap: wrap;
   }}
   .stat-pill {{
@@ -251,7 +257,7 @@ st.markdown(f"""
       line-height: 1.8;
       border-left: 2px solid #4CBB17;
       padding-left: 0.9rem;
-      margin-top: 0.8rem;
+      margin-top: 0.3rem;
   }}
   .fert-box {{
       background: #eaf4e0;
@@ -404,8 +410,13 @@ st.markdown(f"""
   }}
 
   /* ── Camera icon button ──────────────────────────────────────── */
-  .camera-btn-wrap {{
-      text-align: center;
+  .btn-ghost {{
+      display: flex;
+      justify-content: center;
+      margin-top: -0.5rem;
+  }}
+  .btn-ghost div[data-testid="stButton"] {{
+      width: auto !important;
   }}
   .camera-btn:hover .tooltip {{
       visibility: visible;
@@ -673,7 +684,6 @@ def add_existing_to_collection(plant_name, beta_user):
         "common_name":         sp.get("Common Name", plant_name),
         "scientific_name":     sp.get("Scientific Name", ""),
         "cultivar":            sp.get("Cultivar", ""),
-        "care_summary":        "",
         "care_notes":          raw_tips,
         "local_authority":     sp.get("Local Authority", ""),
         "expert_link":         sp.get("Expert Resource", ""),
@@ -727,7 +737,6 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
     common_name  = payload.get("common_name", "")
     scientific   = payload.get("scientific_name", "")
     cultivar     = payload.get("cultivar", "")
-    care_summary = payload.get("care_summary", "")
     care_notes   = payload.get("care_notes", "")
     sun_emoji, sun_tip     = normalize_sun(payload.get("sun", ""))
     water_emoji, water_tip = normalize_water(payload.get("water", ""))
@@ -754,20 +763,7 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
             st.image(photo_url, use_container_width=True)
             record_id = payload.get("record_id")
             if record_id:
-                st.markdown("""
-                <style>
-                div[data-testid="stButton"]:has(button) button {
-                    background-color: #4CBB17 !important;
-                    color: white !important;
-                    border: none !important;
-                    font-size: 2rem !important;
-                    line-height: 1 !important;
-                    padding: 0.6rem !important;
-                    min-height: 3rem !important;
-                }
-                </style>
-                <div class="camera-btn-wrap">
-                """, unsafe_allow_html=True)
+                st.markdown('<div class="btn-ghost">', unsafe_allow_html=True)
                 if st.button("📷", key=f"cam_{record_id}", help="Update Photo", use_container_width=True):
                     with st.spinner("Searching for a photo..."):
                         new_url = update_specimen_photo(
@@ -782,21 +778,23 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
                         st.warning("Couldn't find a photo. Try again or rerun intake.")
                 st.markdown('</div>', unsafe_allow_html=True)
         with col_info:
-            st.markdown(f'<div class="result-common">{common_name}</div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="result-scientific">{scientific}</div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="stat-row">{pills_html}</div>', unsafe_allow_html=True)
+            notes_html = inject_emojis(care_notes, sun_emoji, water_emoji) if (not compact and care_notes) else ""
+            st.markdown(f"""
+            <div class="result-common">{common_name}</div>
+            <div class="result-scientific">{scientific}</div>
+            <div class="stat-row">{pills_html}</div>
+            {f'<div class="care-notes">{notes_html}</div>' if notes_html else ""}
+            """, unsafe_allow_html=True)
     else:
-        st.markdown(f'<div class="result-common">{common_name}</div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="result-scientific">{scientific}</div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="stat-row">{pills_html}</div>', unsafe_allow_html=True)
+        notes_html = inject_emojis(care_notes, sun_emoji, water_emoji) if (not compact and care_notes) else ""
+        st.markdown(f"""
+        <div class="result-common">{common_name}</div>
+        <div class="result-scientific">{scientific}</div>
+        <div class="stat-row">{pills_html}</div>
+        {f'<div class="care-notes">{notes_html}</div>' if notes_html else ""}
+        """, unsafe_allow_html=True)
 
     if not compact:
-        if care_summary:
-            st.markdown(f'<div class="result-summary">{care_summary}</div>', unsafe_allow_html=True)
-
-        if care_notes:
-            notes_html = inject_emojis(care_notes, sun_emoji, water_emoji)
-            st.markdown(f'<div class="care-notes">{notes_html}</div>', unsafe_allow_html=True)
 
         if fert:
             st.markdown(f"""
@@ -1143,7 +1141,6 @@ with tab_collection:
                             "common_name":         common,
                             "scientific_name":     sp.get("Scientific Name", f.get("Species", "")),
                             "cultivar":            sp.get("Cultivar", ""),
-                            "care_summary":        "",
                             "care_notes":          sp.get("Care Notes", ""),
                             "sun":                 sp.get("Sunlight", f.get("Lighting", "")),
                             "water":               sp.get("Water", ""),

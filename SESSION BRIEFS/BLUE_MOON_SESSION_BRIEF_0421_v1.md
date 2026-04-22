@@ -80,11 +80,11 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 ## 💡 SESSION FOCUS
 
 > Immediate priorities in order:
-> 
+>
 > 1. **Push `plant_intake.py`** — record ID fix is written, not yet deployed. Do this first.
 > 2. **"Is this your plant?" confirmation flow** — post-intake result card rethink, tab navigation to care card, auto-open selected plant's care card in My Collection
-> 3. **Layout polish** — top gap on header card, rounded corners on header/intake card separation (see open issues)
-> 4. **About link in header** — wire ✦ About link to scroll/activate the About tab (DOM click approach written, needs testing)
+> 3. **st.fragment shaping pass** — map rerun boundaries and session_state dependencies for collection tab. Scope reruns to fragment only instead of full app rerun on tile click. Shape here, hand to Code as .md.
+> 4. **Care card section explainers** — draft copy for photo, emoji, fertilizer, source, and care notes sections (direction established, copy not yet written)
 
 ---
 
@@ -109,7 +109,7 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 
 - **`app.py`** — upload when: any TODO item involves UI changes, new functions, or app.py edits. Skip for planning-only or Make.com-only sessions.
 - **`BLUE_MOON_PRODUCT_VISION.md`** — upload when: June voice work, new feature scoping, or cold-start session where memory context may be stale. Skip for execution sessions.
-- **`BMB_ABOUT_TAB_DRAFT.md`** — implemented this session — no longer needed as a separate upload.
+- **`about.md`** — About section content, read by app.py at runtime. Upload when editing About copy.
 
 > 📎 **Reference doc:** `BLUE_MOON_REFERENCE.md` — appendix material (Streamlit config, Railway details, Make.com architecture, webhook URLs, Species Library field mapping table). Upload only when doing Make.com or infrastructure work.
 
@@ -125,41 +125,69 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 
 ## 📋 LAST SESSION SUMMARY
 
-**APR 20 2026 — Session 11:** Ignored the TODO list intentionally — focused on two visual tweaks that turned into a full UI overhaul. Strong execution, good momentum. Layout polish still has one open item (top gap / rounded corners) but the app looks dramatically better.
+**APR 20 2026 — Session 12 (UI polish + Collection tab overhaul):** Planned to push the record ID fix and build the "Is this your plant?" flow. Instead pivoted into UI polish that turned into a full Collection tab overhaul. Strong execution. Mobile phone test afterward confirmed the Collection tab changes were the right call — card-on-top, search, and autoscroll all land well on mobile.
 
 **Completed:**
 
-- Logo banner — `botanicslogo.png` loaded via `assets.py`, replaces text wordmark
-- Favicon — `favicon.png` (B+crescent crop), wired into `st.set_page_config`
-- `assets.py` updated — `get_logo_base64()` added with `@st.cache_data`
-- Two-card layout — header card and intake section visually separated by hex tile divider strip
-- Header card — green border (`#4CBB17`), cream background, logo image, ✦ About link
-- ✦ About tab — implemented live with full content, tab order: Add a Plant → My Collection → ✦ June → ✦ About
-- About content — copy edited, typos fixed, section order finalized (What is this → Who is it for → About June → Where things stand → Who made this)
-- `block-container` CSS — top padding set to 80px for top gap, rounded corners adjusted for two-card illusion
-- Hex tile divider — `bmb-hex-divider` class, uses `bg_tile.png` base64, sits between header and intake cards
-- Dead `.bmb-card` wrapper removed from tabs section
-- Duplicate `# ─── HEADER CARD ───` comment cleaned up
+- about.md externalized — About section content pulled out of app.py into standalone file, app.py reads at runtime
+- st.cache_data added — fetch_beta_users (TTL 600s), fetch_collection (TTL 300s), fetch_species (TTL 3600s). Significant performance improvement.
+- care_summary removed — legacy ghost field that was never populated. Care notes moved up to fill gap.
+- Camera button — resized from full photo width to compact. Ghost button style (cream fill, green border, green emoji). Centered beneath photo.
+- About link color — fixed default blue hyperlink to match design system
+- Collection tab overhaul:
+  - Reserved card slot above tile grid with explainer copy in `.june-intro` style
+  - Explainer swaps to care card on tile selection via `st.session_state["selected_plant"]`
+  - Autoscroll to card slot on tile click (working)
+  - Search bar added below "Whose collection?" selectbox
+  - Sort options converted from selectbox to radio buttons
+  - Redundant "click a plant's name" instruction removed
+  - Care emoji right-justified (sun left, water right) in tile preview
 
-**Key files changed this session:**
+**Tried and parked:**
 
-- `app.py` — banner, favicon, CSS overhaul, About tab, two-card layout
-- `assets.py` — `get_logo_base64()` added
-- New files added to project folder: `botanicslogo.png`, `favicon.png`
+- Cream background on care card container — attempted five approaches to style `st.container(border=True)` with `#fcfaf5` background. Streamlit's Emotion CSS-in-JS and unpredictable DOM nesting defeated all attempts. Current state: white background with `#c8d8b0` green border. Functional and clean. Revisit only if Streamlit exposes better container styling hooks.
+
+**Key observations:**
+
+- First mobile phone test confirmed the app is surprisingly suitable for mobile. Care card at the top and search bar placement were validated as the right calls.
+- Mobile is the most likely intake device — this is now an explicit design principle, not accidental.
 
 **Open issues going into next session:**
 
 1. `plant_intake.py` record ID fix — **push to Railway before anything else next session**
 2. "Is this your plant?" confirmation + tab navigation to care card — next session priority 1
-3. Fake "See Full Care Tips" button — eliminated once #2 lands
-4. Header card top gap — `margin-top: 80px` on `.bmb-header-card` set, needs visual confirmation next session
-5. Rounded corners — `border-radius: 12px 12px 0 0` on header card, `0 0 12px 12px` on block-container — needs visual confirmation
-6. ✦ About link in header — DOM click approach written (`querySelectorAll('[data-baseweb=tab]')[3].click()`), needs testing
-7. About link font color — currently rendering blue (browser default), should match tab label style (`#7a9a5a`)
-8. Black Prayer Plant + Cat Mustache Prayer Plant — emojis only, Species Library name mismatch (Make.com data issue)
-9. Autoscroll to care card after tile selection — parked, `st.query_params` approach needed
-10. Hint line — bigger and centered (quick CSS tweak, carried from previous session)
-11. Emoji outline on tile labels — subtle text-shadow on `.plant-tile-label` (carried from previous session)
+3. st.fragment shaping pass — needs to map rerun boundaries and session_state dependencies before handing to Code
+4. Care card section explainers — direction established, copy not yet written
+5. CLAUDE.md — building persistent Code context file. Waiting for one more Code spin before drafting.
+6. Black Prayer Plant + Cat Mustache Prayer Plant — emojis only, Species Library name mismatch (Make.com data issue)
+7. Hint line — bigger and centered (quick CSS tweak, carried forward)
+8. Emoji outline on tile labels — subtle text-shadow on `.plant-tile-label` (carried forward)
+
+---
+
+## 🎨 DESIGN SYSTEM
+
+### Design principles
+
+- **Mobile-first** — phone is the most likely intake device. Design for portrait viewport first, enhance for desktop.
+- **Two-front-door philosophy** — manual fields for expert users, June for hobbyists, both writing to the same data model.
+
+### Visual tokens
+
+- `.june-intro` green card = June's visual signature. Do not use for non-June elements.
+- Care card container = white background, `#c8d8b0` border, border-radius 6px
+- Ghost button style (`.btn-ghost`) = cream fill `#fcfaf5`, green border, green icon. Used for secondary actions.
+- Primary buttons = filled `#4CBB17` green
+- Header card = green border (`#4CBB17`), cream background
+- Hex tile divider = `bmb-hex-divider` class, uses `bg_tile.png` base64, sits between header and intake cards
+
+### Copy style
+
+- No em dashes. Use hyphens or new sentences instead.
+
+### Cream background note
+
+Styling `st.container(border=True)` with a custom background color is not currently feasible in Streamlit. Five approaches tested and failed (global CSS, scoped CSS with `:has()`, inline `<style>` injection, JS `querySelectorAll`, JS DOM traversal). Do not re-attempt unless Streamlit releases new container styling hooks.
 
 ---
 
@@ -181,10 +209,9 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 - **Script:** plant_intake.py v2.7.0
 - **UI:** app.py v1.2.0 (version header outdated — actual code is further along)
 - **Shared utility:** image_search.py
-- **Placeholder image:** plant_placeholder.png (green monstera silhouette, transparent bg)
-- **Logo banner:** botanicslogo.png — art nouveau frame, B+crescent mark, loaded via assets.py
-- **Favicon:** favicon.png — B+crescent crop, square, wired into st.set_page_config
-- **Background:** Midjourney hex tile PNG (bg_tile.png) — loaded via assets.py, Railway reads from repo
+- **Assets:** assets.py — serves plant_placeholder.png, botanicslogo.png, bg_tile.png as base64
+- **Favicon:** favicon.png — B+crescent crop, wired into st.set_page_config
+- **About content:** about.md — externalized, read by app.py at runtime
 - **AI:** Gemini 2.5 Flash (primary) → Gemini 2.5 Flash Lite → Gemini 2.0 Flash (failover)
 - **Image Search:** Serper.dev (Pass 0) → Wikimedia Commons (Pass 1-2) → Placeholder
 - **Automation:** Make.com (us2 region) — 2 scenarios, free tier
@@ -210,12 +237,12 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 ### 2. Hint line styling
 
 - **Desired:** Bigger and centered above the tile grid.
-- **Fix:** Quick CSS tweak to `.tile-grid-hint`. Next session quick win.
+- **Fix:** Quick CSS tweak to `.tile-grid-hint`. Quick win.
 
 ### 3. Emoji outline on tile labels
 
 - **Desired:** Subtle text-shadow on emojis in `.plant-tile-label` for definition.
-- **Fix:** One CSS addition. Next session quick win.
+- **Fix:** One CSS addition. Quick win.
 
 ### 4. Black Prayer Plant + Cat Mustache Prayer Plant — emojis only
 
@@ -238,25 +265,13 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 
 - **Status:** Confirmed. Future fix: add "search before create" in Make.com.
 
-### 8. fetch_collection / fetch_species — no caching
-
-- **Symptom:** Sequential Airtable API calls on every collection load.
-- **Fix:** Wrap in `@st.cache_data(ttl=60)`. Significant speed improvement. Backlog.
-
-### 9. Autoscroll to care card after tile selection
-
-- **Symptom:** Page flashes (st.rerun fires), JS scroll doesn't survive rerun.
-- **Fix:** `st.query_params` approach or anchor alternative. Parked.
-
-### 10. Sunlight/Water fields storing emojis instead of text
+### 8. Sunlight/Water fields storing emojis instead of text
 
 - **Symptom:** Normalizer receiving emoji input instead of text strings.
 - **Status:** Handled via legacy passthrough in normalizer. Clean fix in Make.com session.
 
-### 11. ✦ About link in header card — color and routing
+### 9. ✦ About link in header card — routing
 
-- **Symptom:** Link rendering blue (browser default link color) instead of `#7a9a5a`.
-- **Fix:** Confirm `.bmb-about-link` CSS is applying. Check specificity — may need `!important` or inline style override.
 - **Routing:** DOM click approach written — `querySelectorAll('[data-baseweb=tab]')[3].click()` — needs live testing to confirm it activates the About tab.
 
 ---
@@ -269,7 +284,7 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 - [x] Full light theme UI redesign (v1.1.0)
 - [x] Hex tile background — Midjourney seamless PNG, now loaded via assets.py
 - [x] Tab order: Add a Plant → My Collection → ✦ June → ✦ About
-- [x] Beta User separation — multi-user working end-to-end
+- [x] Beta User separation working end-to-end
 - [x] User selection persistence across tabs (session_state fix)
 - [x] Species Library now populated on every new intake (Make.com Create branch)
 - [x] Add a Plant result card — trimmed to compact view (name/photo/pills + nudge button)
@@ -285,10 +300,10 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 - [x] fetch_species() — case-insensitive matching via LOWER()
 - [x] My Collection — photo card grid (2-column responsive)
 - [x] Arrow label tile buttons replacing Open buttons
-- [x] Camera icon button — green, tooltip, full-width under photo
+- [x] Camera icon button — compact, ghost style, centered beneath photo
 - [x] plant_placeholder.png — base64 served via assets.py
 - [x] Rotating quotes during Gemini intake — threading pattern, 5-second cycle
-- [x] Loading label above quote cycle — "Digging around for your plant…"
+- [x] Loading label above quote cycle — "Digging around for your plant..."
 - [x] Emoji normalizer — normalize_sun() and normalize_water() with tooltip text
 - [x] Legacy emoji passthrough for existing Airtable data
 - [x] New sun emoji scale — 🌤️ progression
@@ -299,6 +314,12 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 - [x] Two-card layout — header card + hex tile divider + intake card
 - [x] ✦ About tab — live with full content, copy edited
 - [x] get_logo_base64() — added to assets.py with @st.cache_data
+- [x] about.md externalized — About content pulled out of app.py into standalone file
+- [x] st.cache_data — fetch_beta_users (600s), fetch_collection (300s), fetch_species (3600s)
+- [x] care_summary removed — legacy ghost field cleaned up
+- [x] About link color — fixed to match design system
+- [x] Collection tab overhaul — reserved card slot, explainer/care card swap, autoscroll, search bar, radio sort, emoji layout
+- [x] Autoscroll to care card on tile selection — working
 
 ---
 
@@ -320,11 +341,12 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 
 ### Nice to Have
 
-- Plant loader animation wired in
 - ✅ Logo banner
-- Photo confirmation step
 - ✅ My Collection sorting
 - ✅ My Collection photo card view
+- ✅ Collection search bar
+- Plant loader animation wired in
+- Photo confirmation step
 
 ### Out of Scope for Beta
 
@@ -339,8 +361,10 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 
 ### UI / Design
 
+- [ ] st.fragment on collection tab — scope reruns to fragment only. Needs shaping pass first.
+- [ ] Desktop two-panel layout — left panel = care card, right panel = scrollable tile grid. For larger viewports.
+- [ ] Explainer-to-ambient-stats toggle — returning users switch card slot from explainer to collection summary (e.g. "8 plants, 3 need water this week")
 - [ ] Sun/water emoji legend — visible key somewhere in the UI
-- [ ] Autoscroll to care card after tile selection
 - [ ] Add a Plant — cultivar reference resources / visual guides at point of entry
 - [ ] Input helper text — reference variety specificity, tease smarter ID tools coming
 - [ ] Background tile — currently Midjourney v1, can iterate for better seamless edges
@@ -350,15 +374,15 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 ### Product
 
 - [ ] Photo confirmation step before Gemini runs
-- [ ] Post-Gemini confirmation — "Is this your plant?" before writing to Airtable ← next session
+- [ ] Post-Gemini confirmation — "Is this your plant?" before writing to Airtable — next session
 - [ ] "Not quite right? Let's try again" — sad path for confirmation flow (parked, build happy path first)
 - [ ] Disambiguation dictionary + June decision tree
 - [ ] `bluemoon.build/botanics` custom domain routing
 - [ ] Editable specimen fields in My Collection (pot size, potting medium, location, etc.) — big lift, deferred
 - [ ] Species Library duplicate prevention in Make.com (search before create)
 - [ ] Species Library ↔ Specimen Registry linked record wiring
-- [ ] `@st.cache_data(ttl=60)` on fetch_collection and fetch_species — speed win
 - [ ] Humidity as structured intake field — pairs with ESP32 sensor data from Living Door
+- [ ] CLAUDE.md — persistent Code context file. Two layers: technical (stack, conventions, file structure) and product (what BMB is, who it's for, what June is). Waiting for one more Code spin before drafting.
 
 ### Make.com
 
@@ -385,9 +409,10 @@ All files live in: `C:\Users\bulli\OneDrive\Desktop\Blue Moon Projects\`
 - app.py (v1.2.0 header — actual code further along)
 - image_search.py
 - plant_placeholder.png
-- botanicslogo.png ← new this session
-- favicon.png ← new this session
+- botanicslogo.png
+- favicon.png
 - assets.py
+- about.md ← new this session
 - plant_cache.json
 - user_settings.json
 - config.py ← never push to GitHub
@@ -414,3 +439,12 @@ PowerShell alias: `bmb` navigates here from anywhere.
 
 All six active keys set as Railway environment variables.
 **First debug step if anything breaks: verify Airtable PAT is current and scopes are correct.**
+
+---
+
+## 📝 WORKFLOW NOTES
+
+- Shaping and copy work happens in Claude chat. Implementation briefs are drafted here and handed to Code as .md files.
+- Code sessions should start fresh when context compacts.
+- Session briefs serve as the continuity bridge between chat and Code, not conversation history.
+- Mobile is the primary intake device. Test on phone before calling UI work done.

@@ -30,7 +30,7 @@ We're not there yet. But we're growing.
 
 If you just brought home your first pothos and have no idea what you're doing, this is for you.
 
-If you've got a jungle for a living room and you're thinking about wiring up environmental sensors to monitor your collection, this is for you.
+If you've got a jungle for a living room and you're thinking about wiring up humidity sensors to monitor your collection, this is for you.
 
 The gap between those two people is mostly confidence and vocabulary, not capability. Blue Moon Botanics aims to close that gap.
 
@@ -42,7 +42,8 @@ My name is Justin. Most mornings I'm the last link in a long, interconnected cha
 
 I came to this project via a confluence of a persistent curioiusity in how things work and the recognition that growth is rarely easy but routinely rewarding. I asked myself in which direction could I point my attention to engage my curiousity and maximize my learning potential.  And I realized almost immediately I wanted to learn about a topic rich in data and high in practical application so I could really get my hands dirty.  Literally, as it turned out.  
 
-So I landed on plants. Partly because they're everywhere. Partly because the data pool is extraordinarily deep. Partly because they're just beautiful. But why limit myself to experiencing growing pains in learing one subject when I could double my discomfort?  
+So I landed on plants. Partly because they're everywhere. Partly because the data pool is extraordinarily deep. Partly because they're just beautiful. But why limit myself to experiencing growing pains in learing one subject when I could double my discomfort?
+
 In for a penny, in for a pound. 
 
 I was always interested in computers and electronics and equally intimidated by how complex they were.  Tinkering with them felt like it came with a high barrier to entry. Turns out that feeling, standing at the edge of something unfamiliar and not sure if you have what it takes, is exactly how a lot of people feel about keeping a plant alive or building an app.

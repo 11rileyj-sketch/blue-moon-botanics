@@ -15,8 +15,7 @@ from image_search import get_plant_image, build_wsrv_url
 st.set_page_config(
     page_title="Blue Moon Botanics",
     page_icon="favicon.png",
-    layout="centered",
-    initial_sidebar_state="collapsed"
+    layout="centered"
 )
 
 # ─── AUTH GATE ────────────────────────────────────────────────────────────────

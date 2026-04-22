@@ -66,25 +66,23 @@ Focus is good, time to spare, solid momentum. Full collaborative mode — sugges
 
 ## 💻 CLAUDE CODE — SESSION NOTES
 
-Justin is exploring Claude Code as an alternative to the chat upload/copy-paste cycle. Key differences:
+Justin is using Claude Code as the primary implementation tool. Key notes:
 
 - **How to start:** `bmb` alias in PowerShell to navigate to project folder, then `claude` to launch
-- **Context delivery:** Paste the contents of this brief at session start instead of uploading the file — Claude Code reads files directly from the filesystem, no upload needed
+- **Context delivery:** Paste the contents of this brief at session start — Claude Code reads files directly from the filesystem
 - **File edits:** Claude Code reads and writes files directly — no copy-paste cycle, no indentation risk
-- **Auto-fetch:** Claude Code can fetch GitHub-hosted files the same way as chat — silently at session start
 - **Never expose:** `config.py` contains live API keys — confirm it is in `.gitignore` and never pass it as context. Verify with `git status` before any push if unsure.
-- **Workflow note:** The session brief structure, mode check-in, and working style notes all apply equally in Claude Code sessions. The mechanical difference is file access; the collaboration style stays the same.
+- **CLAUDE.md** — persistent context file now exists at project root. Claude Code reads it at session start. Keep it current.
 
 ---
 
 ## 💡 SESSION FOCUS
 
 > Immediate priorities in order:
-> 
-> 1. **Push `plant_intake.py`** — record ID fix is written, not yet deployed. Do this first.
-> 2. **"Is this your plant?" confirmation flow** — post-intake result card rethink, tab navigation to care card, auto-open selected plant's care card in My Collection
-> 3. **Layout polish** — top gap on header card, rounded corners on header/intake card separation (see open issues)
-> 4. **About link in header** — wire ✦ About link to scroll/activate the About tab (DOM click approach written, needs testing)
+>
+> 1. **Push to Railway** — auth is working locally. Deploy and run mobile test on live URL. Verify Railway env vars include `AUTH0_CLIENT_ID`, `AUTH0_CLIENT_SECRET`, `AUTH0_DOMAIN` (should already be set). Update Auth0 callback URLs to include the Railway production URL with `/oauth2callback` suffix.
+> 2. **Make.com batch session** — intake is broken, requires a dedicated Make.com session. Do not mix into app.py work. See Make.com section for full queue.
+> 3. **Onboarding flow** — new vs. returning user check not yet built. New users need a display name + optional zip at first login. Auth infrastructure is now in place; this is the next product step.
 
 ---
 
@@ -109,7 +107,7 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 
 - **`app.py`** — upload when: any TODO item involves UI changes, new functions, or app.py edits. Skip for planning-only or Make.com-only sessions.
 - **`BLUE_MOON_PRODUCT_VISION.md`** — upload when: June voice work, new feature scoping, or cold-start session where memory context may be stale. Skip for execution sessions.
-- **`BMB_ABOUT_TAB_DRAFT.md`** — implemented this session — no longer needed as a separate upload.
+- **`about.md`** — About section content, read by app.py at runtime. Upload when editing About copy.
 
 > 📎 **Reference doc:** `BLUE_MOON_REFERENCE.md` — appendix material (Streamlit config, Railway details, Make.com architecture, webhook URLs, Species Library field mapping table). Upload only when doing Make.com or infrastructure work.
 
@@ -125,41 +123,84 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 
 ## 📋 LAST SESSION SUMMARY
 
-**APR 20 2026 — Session 11:** Ignored the TODO list intentionally — focused on two visual tweaks that turned into a full UI overhaul. Strong execution, good momentum. Layout polish still has one open item (top gap / rounded corners) but the app looks dramatically better.
+**APR 21 2026 — Session 14 (Code session — auth, CSS, CLAUDE.md):** Planned to verify brief implementations, push to Railway, draft CLAUDE.md, and knock out two CSS quick wins. Auth debugging ran long due to secrets.toml issues, but auth is now working locally. Railway push deferred. Everything else done.
 
 **Completed:**
 
-- Logo banner — `botanicslogo.png` loaded via `assets.py`, replaces text wordmark
-- Favicon — `favicon.png` (B+crescent crop), wired into `st.set_page_config`
-- `assets.py` updated — `get_logo_base64()` added with `@st.cache_data`
-- Two-card layout — header card and intake section visually separated by hex tile divider strip
-- Header card — green border (`#4CBB17`), cream background, logo image, ✦ About link
-- ✦ About tab — implemented live with full content, tab order: Add a Plant → My Collection → ✦ June → ✦ About
-- About content — copy edited, typos fixed, section order finalized (What is this → Who is it for → About June → Where things stand → Who made this)
-- `block-container` CSS — top padding set to 80px for top gap, rounded corners adjusted for two-card illusion
-- Hex tile divider — `bmb-hex-divider` class, uses `bg_tile.png` base64, sits between header and intake cards
-- Dead `.bmb-card` wrapper removed from tabs section
-- Duplicate `# ─── HEADER CARD ───` comment cleaned up
+- Auth0 login working locally end-to-end — login screen shows, Google sign-in works, lands in app
+- secrets.toml debugged — three issues fixed: stray `D` prefix on `[auth]`, wrong provider key (`[auth.provider.auth0]` → `[auth.auth0]`), redirect_uri updated to `http://localhost:8501/oauth2callback`
+- Authlib installed (`==1.7.0`) and added to `requirements.txt`
+- Auth0 callback URL updated in dashboard to include `/oauth2callback` path
+- Camera cache fix applied — `fetch_collection.clear()` after successful photo update, message changed to "Photo updated!"
+- Fragment extraction, tile redesign, confirmation flow — verified already implemented in app.py from prior session shaping work
+- CLAUDE.md drafted and saved to project root — technical + product sections, auth config notes, user profile data model, cutting exchange concept
+- Hint line styling — bumped to `0.85rem`, added `text-align: center`
+- Emoji text-shadow — `.plant-tile-label span` rule added, `text-shadow: 0 1px 3px rgba(0,0,0,0.18)`
 
-**Key files changed this session:**
+**Decided:**
 
-- `app.py` — banner, favicon, CSS overhaul, About tab, two-card layout
-- `assets.py` — `get_logo_base64()` added
-- New files added to project folder: `botanicslogo.png`, `favicon.png`
+- secrets.toml provider key format is `[auth.auth0]` — NOT `[auth.providers.auth0]`. This is documented in CLAUDE.md.
+- Railway push deferred until next session — local testing passed, didn't want to deploy mid-debug.
+
+**Bugs found during session:**
+
+- secrets.toml had a stray `D` character prepended to `[auth]` — TOML section was never parsed, auth system never initialized. Fixed.
+- redirect_uri must end with `/oauth2callback` — Streamlit's auth system uses this path internally. Auth0 callback URL list must include it too. Fixed.
 
 **Open issues going into next session:**
 
-1. `plant_intake.py` record ID fix — **push to Railway before anything else next session**
-2. "Is this your plant?" confirmation + tab navigation to care card — next session priority 1
-3. Fake "See Full Care Tips" button — eliminated once #2 lands
-4. Header card top gap — `margin-top: 80px` on `.bmb-header-card` set, needs visual confirmation next session
-5. Rounded corners — `border-radius: 12px 12px 0 0` on header card, `0 0 12px 12px` on block-container — needs visual confirmation
-6. ✦ About link in header — DOM click approach written (`querySelectorAll('[data-baseweb=tab]')[3].click()`), needs testing
-7. About link font color — currently rendering blue (browser default), should match tab label style (`#7a9a5a`)
-8. Black Prayer Plant + Cat Mustache Prayer Plant — emojis only, Species Library name mismatch (Make.com data issue)
-9. Autoscroll to care card after tile selection — parked, `st.query_params` approach needed
-10. Hint line — bigger and centered (quick CSS tweak, carried from previous session)
-11. Emoji outline on tile labels — subtle text-shadow on `.plant-tile-label` (carried from previous session)
+1. Push to Railway + mobile test — auth working locally, needs deploy
+2. Auth0 Railway callback URL — add `https://blue-moon-botanics-production.up.railway.app/oauth2callback` to Auth0 allowed callback URLs before deploying
+3. Make.com batch session — intake broken, full queue in Make.com section below
+4. Onboarding flow — new user path (display name + zip) not yet built
+5. Black Prayer Plant + Cat Mustache Prayer Plant — emojis only, Species Library name mismatch (Make.com issue)
+6. `.collection-nudge-btn` CSS class — orphaned, safe to remove now that confirmation flow is live
+
+---
+
+**APR 21 2026 — Session 13 (Shaping session — fragment + confirmation flow briefs):** Planned to push the record ID fix, shape the st.fragment pass, and shape the confirmation flow. All three done. Session stayed in yellow — no scope creep. Two implementation briefs produced and handed to Code.
+
+**Completed:**
+
+- Record ID fix diagnosed — key name mismatch in app.py (`"record_id"` vs `"airtable_record_id"`). Justin applied the one-line fix inline.
+- Care card section explainer copy — confirmed deployed and live.
+- st.fragment shaping pass — implementation brief drafted. Fragment boundary mapped: `collection_browser()` wraps controls, tile data, card slot, and tile grid. `st.rerun(scope="fragment")` replaces `st.rerun()`.
+- Tile redesign — plant name returns to tile as `st.button` label with `use_container_width=True`. Sun emoji left-justified, water emoji right-justified via flexbox `space-between`.
+- Camera button cache fix — `fetch_collection.clear()` after successful photo update. (Applied in Session 14.)
+- "Is this your plant?" confirmation flow — dead `<a href="#">` nudge link replaced with real `st.button`. Sets `session_state["selected_plant"]`, user taps to My Collection manually.
+
+**Decided:**
+
+- Tab jump via JS DOM click evaluated and rejected. Streamlit's `st.tabs()` has no public API for programmatic switching; DOM selectors are fragile across versions.
+
+---
+
+## 🎨 DESIGN SYSTEM
+
+### Design principles
+
+- **Mobile-first** — phone is the most likely intake device. Design for portrait viewport first, enhance for desktop.
+- **Two-front-door philosophy** — manual fields for expert users, June for hobbyists, both writing to the same data model.
+
+### Visual tokens
+
+- `.june-intro` green card = June's visual signature. Do not use for non-June elements.
+- Care card container = white background, `#c8d8b0` border, border-radius 6px
+- Ghost button style (`.btn-ghost`) = cream fill `#fcfaf5`, green border, green icon. Used for secondary actions.
+- Primary buttons = filled `#4CBB17` green
+- Header card = green border (`#4CBB17`), cream background
+- Hex tile divider = `bmb-hex-divider` class, uses `bg_tile.png` base64, sits between header and intake cards
+- Tile label = flexbox row, sun emoji left-justified, water emoji right-justified (`space-between`), emoji text-shadow for definition
+- Tile button = plant common name, `use_container_width=True`, acts as tile's clickable label
+- Hint line = `0.85rem`, centered, italic, muted green
+
+### Copy style
+
+- No em dashes. Use hyphens or new sentences instead.
+
+### Cream background note
+
+Styling `st.container(border=True)` with a custom background color is not currently feasible in Streamlit. Five approaches tested and failed (global CSS, scoped CSS with `:has()`, inline `<style>` injection, JS `querySelectorAll`, JS DOM traversal). Do not re-attempt unless Streamlit releases new container styling hooks.
 
 ---
 
@@ -179,20 +220,21 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 ## 📦 CURRENT STACK
 
 - **Script:** plant_intake.py v2.7.0
-- **UI:** app.py v1.2.0 (version header outdated — actual code is further along)
+- **UI:** app.py v1.3.0
 - **Shared utility:** image_search.py
-- **Placeholder image:** plant_placeholder.png (green monstera silhouette, transparent bg)
-- **Logo banner:** botanicslogo.png — art nouveau frame, B+crescent mark, loaded via assets.py
-- **Favicon:** favicon.png — B+crescent crop, square, wired into st.set_page_config
-- **Background:** Midjourney hex tile PNG (bg_tile.png) — loaded via assets.py, Railway reads from repo
+- **Assets:** assets.py — serves plant_placeholder.png, botanicslogo.png, bg_tile.png as base64
+- **Favicon:** favicon.png — B+crescent crop, wired into st.set_page_config
+- **About content:** about.md — externalized, read by app.py at runtime
 - **AI:** Gemini 2.5 Flash (primary) → Gemini 2.5 Flash Lite → Gemini 2.0 Flash (failover)
 - **Image Search:** Serper.dev (Pass 0) → Wikimedia Commons (Pass 1-2) → Placeholder
 - **Automation:** Make.com (us2 region) — 2 scenarios, free tier
 - **Database:** Airtable — Blue Moon Projects Nursery (Base ID: appGiJDkp7jv7qbkR)
   - Species Library — shared, community-visible, populated on every new intake
   - Specimen Registry — private per user, Beta User field for multi-user separation
+  - Beta Users — auth users, Name + Email fields
   - History (event log)
   - Location (linked records)
+- **Auth:** Auth0 (Regular Web Application) + Streamlit `st.login()` — requires Authlib>=1.3.2
 - **Hosting:** Railway — live at `blue-moon-botanics-production.up.railway.app`
 - **GitHub:** github.com/11rileyj-sketch/blue-moon-botanics (branch: master)
 - **PowerShell alias:** `bmb` → Blue Moon Projects folder
@@ -201,21 +243,18 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 
 ## 🐛 KNOWN BUGS / NEXT DEBUG TARGETS
 
-### 1. "Is this your plant?" flow — not yet built
+### 1. Railway deploy — auth callback URL
 
-- **Desired:** Post-intake result card shows confirmation buttons. "Yes, that's my plant →" sets `selected_plant` + `active_tab` to My Collection, fires `st.rerun()`. Care card auto-opens for that plant.
-- **Dependency:** `plant_intake.py` record ID fix must be deployed first.
-- **Fix:** Next session priority 1.
+- **Status:** Auth working locally. Before deploying, add `https://blue-moon-botanics-production.up.railway.app/oauth2callback` to Auth0 allowed callback URLs.
+- **Also:** Verify Railway env vars include `AUTH0_CLIENT_ID`, `AUTH0_CLIENT_SECRET`, `AUTH0_DOMAIN`.
 
 ### 2. Hint line styling
 
-- **Desired:** Bigger and centered above the tile grid.
-- **Fix:** Quick CSS tweak to `.tile-grid-hint`. Next session quick win.
+- **Status:** ✅ Fixed this session — `0.85rem`, centered.
 
 ### 3. Emoji outline on tile labels
 
-- **Desired:** Subtle text-shadow on emojis in `.plant-tile-label` for definition.
-- **Fix:** One CSS addition. Next session quick win.
+- **Status:** ✅ Fixed this session — text-shadow added to `.plant-tile-label span`.
 
 ### 4. Black Prayer Plant + Cat Mustache Prayer Plant — emojis only
 
@@ -225,7 +264,6 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 
 ### 5. Make.com — duplicate Species Library writes on `add_existing_to_collection()`
 
-- **Symptom:** Make.com still creates a new Species Library record even though one already exists.
 - **Cause:** Make.com Create branch doesn't check `model_used` field before writing.
 - **Fix:** Add condition — if `model_used == "species_library"`, skip Species Library create step.
 
@@ -238,26 +276,13 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 
 - **Status:** Confirmed. Future fix: add "search before create" in Make.com.
 
-### 8. fetch_collection / fetch_species — no caching
+### 8. Sunlight/Water fields storing emojis instead of text
 
-- **Symptom:** Sequential Airtable API calls on every collection load.
-- **Fix:** Wrap in `@st.cache_data(ttl=60)`. Significant speed improvement. Backlog.
-
-### 9. Autoscroll to care card after tile selection
-
-- **Symptom:** Page flashes (st.rerun fires), JS scroll doesn't survive rerun.
-- **Fix:** `st.query_params` approach or anchor alternative. Parked.
-
-### 10. Sunlight/Water fields storing emojis instead of text
-
-- **Symptom:** Normalizer receiving emoji input instead of text strings.
 - **Status:** Handled via legacy passthrough in normalizer. Clean fix in Make.com session.
 
-### 11. ✦ About link in header card — color and routing
+### 9. `.collection-nudge-btn` CSS class — orphaned
 
-- **Symptom:** Link rendering blue (browser default link color) instead of `#7a9a5a`.
-- **Fix:** Confirm `.bmb-about-link` CSS is applying. Check specificity — may need `!important` or inline style override.
-- **Routing:** DOM click approach written — `querySelectorAll('[data-baseweb=tab]')[3].click()` — needs live testing to confirm it activates the About tab.
+- **Status:** Confirmation flow is live, this class is no longer used. Safe to remove.
 
 ---
 
@@ -268,8 +293,8 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 - [x] Dark theme restored via config.toml, then switched to light theme
 - [x] Full light theme UI redesign (v1.1.0)
 - [x] Hex tile background — Midjourney seamless PNG, now loaded via assets.py
-- [x] Tab order: Add a Plant → My Collection → ✦ June → ✦ About
-- [x] Beta User separation — multi-user working end-to-end
+- [x] Tab order: Add a Plant → My Collection → ✦ June
+- [x] Beta User separation working end-to-end
 - [x] User selection persistence across tabs (session_state fix)
 - [x] Species Library now populated on every new intake (Make.com Create branch)
 - [x] Add a Plant result card — trimmed to compact view (name/photo/pills + nudge button)
@@ -279,26 +304,32 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 - [x] image_search.py — shared utility extracted from plant_intake.py
 - [x] Update Photo — direct Airtable PATCH, no Make.com
 - [x] User switching bug — fixed
-- [x] User state one-way persistence — collection tab defaults to last intake user
 - [x] Add existing species to new user's collection — bypasses Gemini, pulls from Species Library
 - [x] Improved existing-species messaging — distinguishes user collection vs global database
 - [x] fetch_species() — case-insensitive matching via LOWER()
 - [x] My Collection — photo card grid (2-column responsive)
-- [x] Arrow label tile buttons replacing Open buttons
-- [x] Camera icon button — green, tooltip, full-width under photo
+- [x] Camera icon button — compact, ghost style, centered beneath photo
 - [x] plant_placeholder.png — base64 served via assets.py
-- [x] Rotating quotes during Gemini intake — threading pattern, 5-second cycle
-- [x] Loading label above quote cycle — "Digging around for your plant…"
+- [x] Rotating quotes during Gemini intake — threading pattern
 - [x] Emoji normalizer — normalize_sun() and normalize_water() with tooltip text
 - [x] Legacy emoji passthrough for existing Airtable data
-- [x] New sun emoji scale — 🌤️ progression
-- [x] Tile redesign — emojis in label slot, name only on button, hint line above grid
-- [x] Care card section restored after accidental deletion
-- [x] Logo banner — botanicslogo.png, art nouveau frame, loaded via assets.py
-- [x] Favicon — favicon.png, B+crescent mark, wired into st.set_page_config
-- [x] Two-card layout — header card + hex tile divider + intake card
-- [x] ✦ About tab — live with full content, copy edited
-- [x] get_logo_base64() — added to assets.py with @st.cache_data
+- [x] Tile redesign — sun/water emojis left/right justified, plant name as button label
+- [x] Care card section restored and populated from Species Library
+- [x] Logo banner + favicon — loaded via assets.py
+- [x] ✦ About tab — live with full content
+- [x] about.md externalized — read by app.py at runtime
+- [x] st.cache_data — fetch_beta_users (600s), fetch_collection (300s), fetch_species (3600s)
+- [x] Collection tab overhaul — reserved card slot, autoscroll, search bar, radio sort
+- [x] Record ID key mismatch fix — app.py checks both "record_id" and "airtable_record_id"
+- [x] st.fragment on collection_browser() — tile interactions don't trigger full page reload
+- [x] Camera cache fix — fetch_collection.clear() after photo update
+- [x] "Is this your plant?" confirmation flow — st.button sets selected_plant, lands in My Collection
+- [x] Auth0 authentication — working locally end-to-end
+- [x] secrets.toml — correct format documented, all three issues resolved
+- [x] Authlib — installed and in requirements.txt
+- [x] CLAUDE.md — drafted and saved to project root
+- [x] Hint line — bigger (0.85rem) and centered
+- [x] Emoji text-shadow on tile labels
 
 ---
 
@@ -309,22 +340,22 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 - ✅ Streamlit UI with plant intake
 - ✅ My Collection tab reading from Airtable
 - ✅ Railway hosting — live URL
-- ✅ Beta User separation working end-to-end
+- ✅ Auth0 login — working locally, Railway deploy pending
 - ✅ Styling — hex tile background, light theme
 - ✅ Species Library populated on intake
 - ✅ My Collection showing full care data
 - ✅ Add a Plant result card trimmed to compact view
 - ✅ Logo banner and favicon
 - ✅ About tab — live
-- ⬜ "Is this your plant?" confirmation flow
+- ✅ "Is this your plant?" confirmation flow
 
 ### Nice to Have
 
-- Plant loader animation wired in
-- ✅ Logo banner
-- Photo confirmation step
 - ✅ My Collection sorting
 - ✅ My Collection photo card view
+- ✅ Collection search bar
+- Plant loader animation wired in
+- Photo confirmation step
 
 ### Out of Scope for Beta
 
@@ -339,40 +370,35 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 
 ### UI / Design
 
+- [ ] Desktop two-panel layout — left panel = care card, right panel = scrollable tile grid
+- [ ] Explainer-to-ambient-stats toggle — returning users see collection summary instead of explainer
 - [ ] Sun/water emoji legend — visible key somewhere in the UI
-- [ ] Autoscroll to care card after tile selection
-- [ ] Add a Plant — cultivar reference resources / visual guides at point of entry
-- [ ] Input helper text — reference variety specificity, tease smarter ID tools coming
 - [ ] Background tile — currently Midjourney v1, can iterate for better seamless edges
-- [ ] Commonly confused species / multi-cultivar disambiguation (future June feature)
 - [ ] User photo upload for Specimen Photo field
+- [ ] `.collection-nudge-btn` CSS cleanup — orphaned, safe to remove
 
 ### Product
 
-- [ ] Photo confirmation step before Gemini runs
-- [ ] Post-Gemini confirmation — "Is this your plant?" before writing to Airtable ← next session
-- [ ] "Not quite right? Let's try again" — sad path for confirmation flow (parked, build happy path first)
-- [ ] Disambiguation dictionary + June decision tree
+- [ ] Onboarding screen — display name + optional zip for new users at first login
+- [ ] "Not quite right? Let's try again" — sad path for confirmation flow
+- [ ] Cutting exchange — offer on care card, request on species library tab
+- [ ] Species Library tab — master plant list with care emojis + Request a Cutting button
 - [ ] `bluemoon.build/botanics` custom domain routing
-- [ ] Editable specimen fields in My Collection (pot size, potting medium, location, etc.) — big lift, deferred
-- [ ] Species Library duplicate prevention in Make.com (search before create)
+- [ ] Editable specimen fields in My Collection (pot size, potting medium, location, etc.)
 - [ ] Species Library ↔ Specimen Registry linked record wiring
-- [ ] `@st.cache_data(ttl=60)` on fetch_collection and fetch_species — speed win
-- [ ] Humidity as structured intake field — pairs with ESP32 sensor data from Living Door
 
 ### Make.com
 
 - [ ] Fix Create branch — skip Species Library write when model_used == "species_library"
 - [ ] Fix Update branch webhook response — return clean JSON instead of HTML page
-- [ ] Gemini Detail Field — JSON format update
 - [ ] Common Name collision fix — cultivar-specific names must write correctly
 - [ ] Sunlight/Water fields — migrate from emoji storage to text strings
+- [ ] Duplicate Species Library writes — search before create
 
 ### Future / Stretch
 
-- [ ] B2B landing page — nursery QR code co-branding (separate from consumer app)
+- [ ] B2B landing page — nursery QR code co-branding
 - [ ] Community cultivar contributions — founding contributor access model
-- [ ] Cultivar API — tiered access, contributing cultivars = free tier access
 - [ ] Gemini plant ID from photo — confidence score, low confidence → community ID flow
 
 ---
@@ -382,22 +408,18 @@ Justin is exploring Claude Code as an alternative to the chat upload/copy-paste 
 All files live in: `C:\Users\bulli\OneDrive\Desktop\Blue Moon Projects\`
 
 - plant_intake.py (v2.7.0)
-- app.py (v1.2.0 header — actual code further along)
+- app.py (v1.3.0)
 - image_search.py
-- plant_placeholder.png
-- botanicslogo.png ← new this session
-- favicon.png ← new this session
 - assets.py
+- about.md
+- CLAUDE.md ← new this session — persistent Code context
 - plant_cache.json
 - user_settings.json
 - config.py ← never push to GitHub
-- success.mp3
-- MAKE_GOTCHAS.md
-- railway.toml
-- requirements.txt
 - quotes.json
-- bg_tile.png
+- bg_tile.png / botanicslogo.png / favicon.png / plant_placeholder.png
 - .streamlit/config.toml
+- .streamlit/secrets.toml ← Auth0 credentials, never push
 
 PowerShell alias: `bmb` navigates here from anywhere.
 
@@ -411,6 +433,19 @@ PowerShell alias: `bmb` navigates here from anywhere.
 - `AIRTABLE_BASE_ID` — appGiJDkp7jv7qbkR
 - `AIRTABLE_TABLE_NAME` — Species Library
 - `SERPER_API_KEY` — image search
+- `AUTH0_CLIENT_ID` — Railway env var
+- `AUTH0_CLIENT_SECRET` — Railway env var
+- `AUTH0_DOMAIN` — Railway env var
 
-All six active keys set as Railway environment variables.
+All keys set as Railway environment variables.
 **First debug step if anything breaks: verify Airtable PAT is current and scopes are correct.**
+
+---
+
+## 📝 WORKFLOW NOTES
+
+- Shaping and copy work happens in Claude chat. Implementation briefs are drafted there and handed to Code as .md files.
+- Code sessions should start fresh when context compacts.
+- Session briefs serve as the continuity bridge between chat and Code, not conversation history.
+- CLAUDE.md is the persistent technical + product context for Code sessions. Keep it current.
+- Mobile is the primary intake device. Test on phone before calling UI work done.

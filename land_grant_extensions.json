@@ -1,0 +1,314 @@
+{
+  "_meta": {
+    "description": "Land-grant university cooperative extension lookup for Blue Moon Botanics care cards. Maps state abbreviation to the primary extension service name and gardening/plant resource URL.",
+    "version": "1.0.0",
+    "last_updated": "2026-04-20",
+    "notes": "Uses the primary 1862 land-grant extension per state. URLs point to the gardening or home horticulture portal where available, otherwise the extension homepage."
+  },
+  "AL": {
+    "name": "Alabama Cooperative Extension System",
+    "university": "Auburn University",
+    "url": "https://www.aces.edu/",
+    "gardening_url": "https://www.aces.edu/blog/category/lawn-garden/"
+  },
+  "AK": {
+    "name": "UAF Cooperative Extension Service",
+    "university": "University of Alaska Fairbanks",
+    "url": "https://www.uaf.edu/ces/",
+    "gardening_url": "https://www.uaf.edu/ces/garden/"
+  },
+  "AZ": {
+    "name": "University of Arizona Cooperative Extension",
+    "university": "University of Arizona",
+    "url": "https://extension.arizona.edu/",
+    "gardening_url": "https://extension.arizona.edu/pubs/gardening"
+  },
+  "AR": {
+    "name": "Arkansas Division of Agriculture Extension",
+    "university": "University of Arkansas",
+    "url": "https://www.uaex.uada.edu/",
+    "gardening_url": "https://www.uaex.uada.edu/yard-garden/"
+  },
+  "CA": {
+    "name": "UC Agriculture and Natural Resources",
+    "university": "University of California",
+    "url": "https://ucanr.edu/",
+    "gardening_url": "https://ucanr.edu/sites/MasterGardener/"
+  },
+  "CO": {
+    "name": "CSU Extension",
+    "university": "Colorado State University",
+    "url": "https://extension.colostate.edu/",
+    "gardening_url": "https://extension.colostate.edu/topic-areas/yard-garden/"
+  },
+  "CT": {
+    "name": "UConn Extension",
+    "university": "University of Connecticut",
+    "url": "https://extension.uconn.edu/",
+    "gardening_url": "https://extension.uconn.edu/gardening/"
+  },
+  "DE": {
+    "name": "UD Cooperative Extension",
+    "university": "University of Delaware",
+    "url": "https://www.udel.edu/canr/cooperative-extension/",
+    "gardening_url": "https://www.udel.edu/canr/cooperative-extension/fact-sheets/lawn-garden/"
+  },
+  "FL": {
+    "name": "UF/IFAS Extension",
+    "university": "University of Florida",
+    "url": "https://ifas.ufl.edu/",
+    "gardening_url": "https://gardeningsolutions.ifas.ufl.edu/"
+  },
+  "GA": {
+    "name": "UGA Cooperative Extension",
+    "university": "University of Georgia",
+    "url": "https://extension.uga.edu/",
+    "gardening_url": "https://extension.uga.edu/topic-areas/lawn-garden-landscapes.html"
+  },
+  "HI": {
+    "name": "UH CTAHR Extension",
+    "university": "University of Hawaii at Manoa",
+    "url": "https://www.ctahr.hawaii.edu/",
+    "gardening_url": "https://www.ctahr.hawaii.edu/site/ExtHome.aspx"
+  },
+  "ID": {
+    "name": "University of Idaho Extension",
+    "university": "University of Idaho",
+    "url": "https://www.uidaho.edu/extension",
+    "gardening_url": "https://www.uidaho.edu/extension/county/ada/horticulture"
+  },
+  "IL": {
+    "name": "University of Illinois Extension",
+    "university": "University of Illinois Urbana-Champaign",
+    "url": "https://extension.illinois.edu/",
+    "gardening_url": "https://extension.illinois.edu/global/horticulture"
+  },
+  "IN": {
+    "name": "Purdue Extension",
+    "university": "Purdue University",
+    "url": "https://extension.purdue.edu/",
+    "gardening_url": "https://www.purdue.edu/hla/sites/yardandgarden/"
+  },
+  "IA": {
+    "name": "Iowa State University Extension and Outreach",
+    "university": "Iowa State University",
+    "url": "https://www.extension.iastate.edu/",
+    "gardening_url": "https://www.extension.iastate.edu/topic/yard-and-garden"
+  },
+  "KS": {
+    "name": "K-State Research and Extension",
+    "university": "Kansas State University",
+    "url": "https://www.ksre.k-state.edu/",
+    "gardening_url": "https://hnr.k-state.edu/extension/"
+  },
+  "KY": {
+    "name": "UK Cooperative Extension Service",
+    "university": "University of Kentucky",
+    "url": "https://extension.ca.uky.edu/",
+    "gardening_url": "https://www.uky.edu/hort/home-gardening"
+  },
+  "LA": {
+    "name": "LSU AgCenter",
+    "university": "Louisiana State University",
+    "url": "https://www.lsuagcenter.com/",
+    "gardening_url": "https://www.lsuagcenter.com/topics/lawn_garden"
+  },
+  "ME": {
+    "name": "UMaine Cooperative Extension",
+    "university": "University of Maine",
+    "url": "https://extension.umaine.edu/",
+    "gardening_url": "https://extension.umaine.edu/gardening/"
+  },
+  "MD": {
+    "name": "University of Maryland Extension",
+    "university": "University of Maryland",
+    "url": "https://extension.umd.edu/",
+    "gardening_url": "https://extension.umd.edu/programs/environment-natural-resources/program-areas/home-and-garden-information-center"
+  },
+  "MA": {
+    "name": "UMass Extension",
+    "university": "University of Massachusetts Amherst",
+    "url": "https://ag.umass.edu/",
+    "gardening_url": "https://ag.umass.edu/home-lawn-garden"
+  },
+  "MI": {
+    "name": "MSU Extension",
+    "university": "Michigan State University",
+    "url": "https://www.canr.msu.edu/outreach/",
+    "gardening_url": "https://www.canr.msu.edu/home_gardening/"
+  },
+  "MN": {
+    "name": "University of Minnesota Extension",
+    "university": "University of Minnesota",
+    "url": "https://extension.umn.edu/",
+    "gardening_url": "https://extension.umn.edu/yard-and-garden"
+  },
+  "MS": {
+    "name": "MSU Extension Service",
+    "university": "Mississippi State University",
+    "url": "https://extension.msstate.edu/",
+    "gardening_url": "https://extension.msstate.edu/lawn-and-garden"
+  },
+  "MO": {
+    "name": "MU Extension",
+    "university": "University of Missouri",
+    "url": "https://extension.missouri.edu/",
+    "gardening_url": "https://extension.missouri.edu/programs/yard-and-garden"
+  },
+  "MT": {
+    "name": "MSU Extension",
+    "university": "Montana State University",
+    "url": "https://www.montana.edu/extension/",
+    "gardening_url": "https://www.montana.edu/extension/yard_and_garden/"
+  },
+  "NE": {
+    "name": "Nebraska Extension",
+    "university": "University of Nebraska-Lincoln",
+    "url": "https://extension.unl.edu/",
+    "gardening_url": "https://extension.unl.edu/statewide/douglas-sarpy/lawn-garden/"
+  },
+  "NV": {
+    "name": "University of Nevada Extension",
+    "university": "University of Nevada, Reno",
+    "url": "https://extension.unr.edu/",
+    "gardening_url": "https://extension.unr.edu/programs.aspx?groupID=10"
+  },
+  "NH": {
+    "name": "UNH Cooperative Extension",
+    "university": "University of New Hampshire",
+    "url": "https://extension.unh.edu/",
+    "gardening_url": "https://extension.unh.edu/topics/gardening"
+  },
+  "NJ": {
+    "name": "Rutgers Cooperative Extension",
+    "university": "Rutgers University",
+    "url": "https://njaes.rutgers.edu/extension/",
+    "gardening_url": "https://njaes.rutgers.edu/home-lawn-garden/"
+  },
+  "NM": {
+    "name": "NMSU Cooperative Extension Service",
+    "university": "New Mexico State University",
+    "url": "https://extension.nmsu.edu/",
+    "gardening_url": "https://extension.nmsu.edu/gardening-information.html"
+  },
+  "NY": {
+    "name": "Cornell Cooperative Extension",
+    "university": "Cornell University",
+    "url": "https://cals.cornell.edu/cornell-cooperative-extension",
+    "gardening_url": "https://www.gardening.cornell.edu/"
+  },
+  "NC": {
+    "name": "NC State Extension",
+    "university": "North Carolina State University",
+    "url": "https://www.ces.ncsu.edu/",
+    "gardening_url": "https://gardening.ces.ncsu.edu/"
+  },
+  "ND": {
+    "name": "NDSU Extension",
+    "university": "North Dakota State University",
+    "url": "https://www.ndsu.edu/agriculture/extension",
+    "gardening_url": "https://www.ndsu.edu/agriculture/extension/gardens"
+  },
+  "OH": {
+    "name": "OSU Extension",
+    "university": "Ohio State University",
+    "url": "https://extension.osu.edu/",
+    "gardening_url": "https://extension.osu.edu/today/lawn-and-garden"
+  },
+  "OK": {
+    "name": "Oklahoma Cooperative Extension Service",
+    "university": "Oklahoma State University",
+    "url": "https://extension.okstate.edu/",
+    "gardening_url": "https://extension.okstate.edu/topics/lawn-and-garden/index.html"
+  },
+  "OR": {
+    "name": "OSU Extension Service",
+    "university": "Oregon State University",
+    "url": "https://extension.oregonstate.edu/",
+    "gardening_url": "https://extension.oregonstate.edu/gardening"
+  },
+  "PA": {
+    "name": "Penn State Extension",
+    "university": "Penn State University",
+    "url": "https://extension.psu.edu/",
+    "gardening_url": "https://extension.psu.edu/plants/gardening"
+  },
+  "RI": {
+    "name": "URI Cooperative Extension",
+    "university": "University of Rhode Island",
+    "url": "https://web.uri.edu/coopext/",
+    "gardening_url": "https://web.uri.edu/mastergardeners/"
+  },
+  "SC": {
+    "name": "Clemson Cooperative Extension",
+    "university": "Clemson University",
+    "url": "https://www.clemson.edu/extension/",
+    "gardening_url": "https://hgic.clemson.edu/"
+  },
+  "SD": {
+    "name": "SDSU Extension",
+    "university": "South Dakota State University",
+    "url": "https://extension.sdstate.edu/",
+    "gardening_url": "https://extension.sdstate.edu/gardening-horticulture"
+  },
+  "TN": {
+    "name": "UT Extension",
+    "university": "University of Tennessee",
+    "url": "https://extension.tennessee.edu/",
+    "gardening_url": "https://extension.tennessee.edu/publications/Pages/lawn-garden.aspx"
+  },
+  "TX": {
+    "name": "Texas A&M AgriLife Extension",
+    "university": "Texas A&M University",
+    "url": "https://agrilifeextension.tamu.edu/",
+    "gardening_url": "https://agrilifeextension.tamu.edu/solutions/gardening-landscaping/"
+  },
+  "UT": {
+    "name": "USU Extension",
+    "university": "Utah State University",
+    "url": "https://extension.usu.edu/",
+    "gardening_url": "https://extension.usu.edu/yardandgarden/"
+  },
+  "VT": {
+    "name": "UVM Extension",
+    "university": "University of Vermont",
+    "url": "https://www.uvm.edu/extension",
+    "gardening_url": "https://www.uvm.edu/extension/mastergardener"
+  },
+  "VA": {
+    "name": "Virginia Cooperative Extension",
+    "university": "Virginia Tech",
+    "url": "https://ext.vt.edu/",
+    "gardening_url": "https://ext.vt.edu/lawn-garden.html"
+  },
+  "WA": {
+    "name": "WSU Extension",
+    "university": "Washington State University",
+    "url": "https://extension.wsu.edu/",
+    "gardening_url": "https://extension.wsu.edu/gardening/"
+  },
+  "WV": {
+    "name": "WVU Extension Service",
+    "university": "West Virginia University",
+    "url": "https://extension.wvu.edu/",
+    "gardening_url": "https://extension.wvu.edu/lawn-gardening-pests"
+  },
+  "WI": {
+    "name": "UW-Madison Division of Extension",
+    "university": "University of Wisconsin-Madison",
+    "url": "https://extension.wisc.edu/",
+    "gardening_url": "https://hort.extension.wisc.edu/"
+  },
+  "WY": {
+    "name": "UW Extension",
+    "university": "University of Wyoming",
+    "url": "https://www.uwyo.edu/uwe/",
+    "gardening_url": "https://www.uwyo.edu/uwe/programs/horticulture.html"
+  },
+  "DC": {
+    "name": "UDC Center for Urban Agriculture",
+    "university": "University of the District of Columbia",
+    "url": "https://www.udc.edu/causes/land-grant/cooperative-extension/",
+    "gardening_url": "https://www.udc.edu/causes/land-grant/cooperative-extension/"
+  }
+}

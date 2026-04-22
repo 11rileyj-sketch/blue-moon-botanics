@@ -6,6 +6,7 @@ import requests
 import urllib.parse
 import base64
 import random
+from datetime import datetime
 from plant_intake import run_intake, load_manifest, load_cache
 from assets import get_bg_base64, get_placeholder_base64, get_logo_base64
 from image_search import get_plant_image, build_wsrv_url
@@ -24,7 +25,7 @@ if not st.user.is_logged_in:
     st.stop()
 
 user_email = st.user.email
-display_name = st.user.name or user_email
+display_name = st.session_state.get("display_name") or st.user.name or user_email
 
 # ─── STYLES ───────────────────────────────────────────────────────────────────
 bg_image = get_bg_base64()
@@ -481,6 +482,70 @@ st.markdown(f"""
       color: #7a9a5a;
   }}
 
+  /* ── Onboarding screen ───────────────────────────────────────── */
+  .onboarding-wrap {{
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 2rem 0;
+  }}
+  .onboarding-helper {{
+      font-size: 0.78rem;
+      color: #7a9a5a;
+      font-style: italic;
+      margin-top: -0.6rem;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+  }}
+
+  /* ── Sidebar profile panel ───────────────────────────────────── */
+  [data-testid="stSidebar"] {{
+      background-color: rgba(252, 250, 245, 0.98);
+      border-right: 1px solid #c8d8b0;
+  }}
+  [data-testid="stSidebar"] .block-container {{
+      padding: 1.5rem 1rem;
+      margin-top: 0;
+      box-shadow: none;
+  }}
+  .sidebar-avatar {{
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #4CBB17;
+      color: white;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.8rem;
+  }}
+  .sidebar-name {{
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: #2d5a1b;
+      text-align: center;
+      margin-bottom: 0.15rem;
+  }}
+  .sidebar-email {{
+      font-size: 0.72rem;
+      color: #7a9a5a;
+      text-align: center;
+      margin-bottom: 1.2rem;
+      word-break: break-all;
+  }}
+  .sidebar-stat {{
+      font-size: 0.82rem;
+      color: #3a4a30;
+      margin-bottom: 0.4rem;
+  }}
+  .sidebar-coming-soon {{
+      font-size: 0.72rem;
+      color: #7a9a5a;
+      font-style: italic;
+      margin-top: 0.4rem;
+  }}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -512,15 +577,8 @@ AIRTABLE_BASE_ID = get_config("AIRTABLE_BASE_ID")
 SPECIMEN_TABLE   = "Specimen Registry"
 
 def get_location():
-    if os.path.exists(SETTINGS_FILE):
-        try:
-            with open(SETTINGS_FILE) as f:
-                return json.load(f).get("zip_code", "General")
-        except:
-            pass
-    return "General"
-
-location = get_location()
+    user_record = fetch_beta_user_record(user_email)
+    return user_record.get("fields", {}).get("ZIP_Code", "General")
 
 def load_quotes():
     quotes_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "quotes.json")
@@ -646,6 +704,22 @@ def fetch_collection(beta_user):
     except:
         return []
     
+@st.cache_data(ttl=600)
+def fetch_beta_user_record(email):
+    """Fetch the Beta Users record for the current user by email."""
+    url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{urllib.parse.quote(BETA_USERS_TABLE)}"
+    params = {"filterByFormula": f"{{Email}} = '{email}'", "pageSize": 1}
+    try:
+        r = requests.get(url, headers=airtable_headers(), params=params)
+        records = r.json().get("records", [])
+        if records:
+            return records[0]
+        return {}
+    except:
+        return {}
+
+location = get_location()
+
 SPECIES_TABLE = "Species Library"
 
 @st.cache_data(ttl=3600)
@@ -680,6 +754,17 @@ def upsert_user(email, display_name):
             headers=airtable_headers(),
             json={"fields": {"Name": display_name, "Email": email}}
         )
+
+def complete_onboarding(record_id, name, zip_code):
+    """PATCHes Beta Users record with display name, optional zip, and Onboarded flag."""
+    url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{urllib.parse.quote(USERS_TABLE)}/{record_id}"
+    fields = {"Name": name, "Onboarded": True}
+    if zip_code:
+        fields["ZIP_Code"] = zip_code
+    try:
+        requests.patch(url, headers=airtable_headers(), json={"fields": fields})
+    except:
+        pass
 
 def update_specimen_photo(record_id, plant_name, common_name, scientific_name):
     """Runs image search and PATCHes the Specimen Registry record with the new photo URL."""
@@ -883,6 +968,81 @@ if st.query_params.get("about") == "1":
 if "user_upserted" not in st.session_state:
     upsert_user(user_email, display_name)
     st.session_state["user_upserted"] = True
+
+# ─── ONBOARDING GATE ──────────────────────────────────────────────────────────
+user_record = fetch_beta_user_record(user_email)
+is_onboarded = user_record.get("fields", {}).get("Onboarded", False)
+
+if not is_onboarded:
+    st.markdown('<div class="onboarding-wrap">', unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="june-intro">
+      Welcome. I'm <span class="june-name">June</span> — I'll be helping you keep your plants alive.
+      Before we get started, a couple of quick things.
+    </div>
+    """, unsafe_allow_html=True)
+
+    with st.form("onboarding_form"):
+        submitted_name = st.text_input("YOUR NAME", value=display_name)
+        st.markdown('<div class="onboarding-helper">This is how you\'ll appear in the app. Edit it if you\'d like.</div>', unsafe_allow_html=True)
+
+        submitted_zip = st.text_input("ZIP CODE (OPTIONAL)", placeholder="e.g. 33607")
+        st.markdown('<div class="onboarding-helper">Optional. Helps me give location-aware care advice. I won\'t do anything weird with it.</div>', unsafe_allow_html=True)
+
+        submitted = st.form_submit_button("Let's go →")
+
+    if submitted:
+        if not submitted_name.strip():
+            st.error("Please enter a display name to continue.")
+        else:
+            record_id = user_record.get("id", "")
+            complete_onboarding(record_id, submitted_name.strip(), submitted_zip.strip())
+            st.session_state["display_name"] = submitted_name.strip()
+            fetch_beta_user_record.clear()
+            st.rerun()
+
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.stop()
+
+# ─── SIDEBAR ──────────────────────────────────────────────────────────────────
+with st.sidebar:
+    initial = (display_name[0] if display_name else "?").upper()
+    collection_records = fetch_collection(display_name)
+    plant_count = len(collection_records)
+
+    user_record = fetch_beta_user_record(user_email)
+    created_raw = user_record.get("createdTime", "")
+    collecting_since = ""
+    if created_raw:
+        try:
+            dt = datetime.strptime(created_raw, "%Y-%m-%dT%H:%M:%S.%fZ")
+            collecting_since = dt.strftime("%B %Y")
+        except ValueError:
+            pass
+
+    st.markdown(f"""
+    <div class="sidebar-avatar">{initial}</div>
+    <div class="sidebar-name">{display_name}</div>
+    <div class="sidebar-email">{user_email}</div>
+    """, unsafe_allow_html=True)
+
+    st.divider()
+
+    if collecting_since:
+        st.markdown(f'<div class="sidebar-stat">🌱 Collecting since {collecting_since}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="sidebar-stat">🪴 {plant_count} plant{"s" if plant_count != 1 else ""}</div>', unsafe_allow_html=True)
+
+    st.divider()
+
+    st.markdown('<div class="sidebar-coming-soon">🌡️ Environmental Monitoring — coming soon</div>', unsafe_allow_html=True)
+
+    st.divider()
+
+    with st.container():
+        st.markdown('<div class="btn-ghost">', unsafe_allow_html=True)
+        st.logout("Sign out")
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # ─── HEX DIVIDER ──────────────────────────────────────────────────────────────
 st.markdown('<div class="bmb-hex-divider"></div>', unsafe_allow_html=True)

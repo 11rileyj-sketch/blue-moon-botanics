@@ -638,7 +638,7 @@ def fetch_beta_users():
 def fetch_collection(beta_user):
     """Returns all Specimen Registry records for the given Beta User (linked record field)."""
     url     = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{urllib.parse.quote(SPECIMEN_TABLE)}"
-    formula = f"FIND('{beta_user}', {{Beta User}})"
+    formula = f"{{Beta User}} = '{beta_user}'"
     params  = {"filterByFormula": formula, "pageSize": 100}
     try:
         r = requests.get(url, headers=airtable_headers(), params=params)

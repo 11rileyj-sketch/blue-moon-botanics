@@ -578,7 +578,7 @@ SPECIMEN_TABLE   = "Specimen Registry"
 
 def get_location():
     user_record = fetch_beta_user_record(user_email)
-    return user_record.get("fields", {}).get("ZIP_Code", "General")
+    return user_record.get("fields", {}).get("ZIP Code", "General")
 
 def load_quotes():
     quotes_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "quotes.json")
@@ -760,7 +760,7 @@ def complete_onboarding(record_id, name, zip_code):
     url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{urllib.parse.quote(USERS_TABLE)}/{record_id}"
     fields = {"Name": name, "Onboarded": True}
     if zip_code:
-        fields["ZIP_Code"] = zip_code
+        fields["ZIP Code"] = zip_code
     r = requests.patch(url, headers=airtable_headers(), json={"fields": fields})
     r.raise_for_status()
 

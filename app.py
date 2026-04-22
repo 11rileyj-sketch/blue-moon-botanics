@@ -971,6 +971,7 @@ if "user_upserted" not in st.session_state:
 is_onboarded = st.session_state.get("is_onboarded", False)
 if not is_onboarded:
     user_record = fetch_beta_user_record(user_email)
+    print(f"DEBUG GATE: fields={user_record.get('fields', {})}", flush=True)
     is_onboarded = user_record.get("fields", {}).get("Onboarded", False)
 
 if not is_onboarded:

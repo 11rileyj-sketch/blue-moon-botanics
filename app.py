@@ -18,6 +18,14 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# ─── AUTH GATE ────────────────────────────────────────────────────────────────
+if not st.user.is_logged_in:
+    st.login("auth0")
+    st.stop()
+
+user_email = st.user.email
+display_name = st.user.name or user_email
+
 # ─── STYLES ───────────────────────────────────────────────────────────────────
 bg_image = get_bg_base64()
 placeholder_b64 = get_placeholder_base64()
@@ -359,12 +367,13 @@ st.markdown(f"""
       margin-bottom: 1.2rem;
   }}
   .tile-grid-hint {{
-      font-size: 0.72rem;
+      font-size: 0.85rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: #7a9a5a;
       margin-bottom: 1rem;
       font-style: italic;
+      text-align: center;
   }}
 
   hr {{ border-color: #c8d8b0; margin: 1.2rem 0; }}
@@ -404,9 +413,12 @@ st.markdown(f"""
       font-weight: 500;
       color: #2d5a1b;
       padding: 0.5rem 0.7rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+  }}
+  .plant-tile-label span {{
+      text-shadow: 0 1px 3px rgba(0,0,0,0.18);
   }}
 
   /* ── Camera icon button ──────────────────────────────────────── */
@@ -650,6 +662,24 @@ def fetch_species(common_name):
         return {}
     except:
         return {}
+    
+USERS_TABLE = "Beta Users"
+
+def upsert_user(email, display_name):
+    """Creates or confirms a user record in Beta Users table on login."""
+    url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{urllib.parse.quote(USERS_TABLE)}"
+    search = requests.get(
+        url,
+        headers=airtable_headers(),
+        params={"filterByFormula": f"{{Email}} = '{email}'", "pageSize": 1}
+    )
+    records = search.json().get("records", [])
+    if not records:
+        requests.post(
+            url,
+            headers=airtable_headers(),
+            json={"fields": {"Name": display_name, "Email": email}}
+        )
 
 def update_specimen_photo(record_id, plant_name, common_name, scientific_name):
     """Runs image search and PATCHes the Specimen Registry record with the new photo URL."""
@@ -761,7 +791,7 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
         col_img, col_info = st.columns([1, 2])
         with col_img:
             st.image(photo_url, use_container_width=True)
-            record_id = payload.get("record_id")
+            record_id = payload.get("record_id") or payload.get("airtable_record_id")
             if record_id:
                 st.markdown('<div class="btn-ghost">', unsafe_allow_html=True)
                 if st.button("📷", key=f"cam_{record_id}", help="Update Photo", use_container_width=True):
@@ -812,12 +842,17 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
                 unsafe_allow_html=True
             )
     else:
-        st.markdown(
-            f'<div style="margin-top:0.6rem;">'
-            f'<a class="collection-nudge-btn" href="#">'
-            f'🌿 See full care tips in My Collection</a></div>',
-            unsafe_allow_html=True
-        )
+        record_id = payload.get("record_id") or payload.get("airtable_record_id")
+        if record_id:
+            if st.button("🌿 See full care tips in My Collection", key=f"nudge_{record_id}", use_container_width=True):
+                st.session_state["selected_plant"] = record_id
+                st.rerun()
+        else:
+            st.markdown(
+                '<div style="margin-top:0.6rem; font-size:0.82rem; color:#7a9a5a;">'
+                'Head to <strong>My Collection</strong> to see full care tips.</div>',
+                unsafe_allow_html=True
+            )
 
     st.markdown('<hr>', unsafe_allow_html=True)
 
@@ -843,6 +878,11 @@ if st.query_params.get("about") == "1":
 
     st.markdown(f'<div class="june-intro">{about_content}</div>', unsafe_allow_html=True)
     st.stop()
+
+# ─── USER UPSERT ──────────────────────────────────────────────────────────────
+if "user_upserted" not in st.session_state:
+    upsert_user(user_email, display_name)
+    st.session_state["user_upserted"] = True
 
 # ─── HEX DIVIDER ──────────────────────────────────────────────────────────────
 st.markdown('<div class="bmb-hex-divider"></div>', unsafe_allow_html=True)
@@ -872,23 +912,7 @@ with tab_june:
 with tab_manual:
 
     # ── Who's adding this plant? ──────────────────────────────────────────────
-    intake_users = fetch_beta_users()
-    if st.session_state.get("_beta_user_error"):
-        st.markdown(
-            f'<div class="warn-box">⚠️ Could not load user list from Airtable: '
-            f'{st.session_state["_beta_user_error"]}</div>',
-            unsafe_allow_html=True
-        )
-    if intake_users:
-        intake_user = st.selectbox(
-            "Who's adding this plant?",
-            options=intake_users,
-            key="intake_user",
-            index=intake_users.index(st.session_state.get("active_user", intake_users[0])) if intake_users else 0
-        )
-        st.session_state["active_user"] = intake_user
-    else:
-        intake_user = "Justin"
+    intake_user = display_name
 
     run_mode = None
 
@@ -1028,6 +1052,137 @@ with tab_manual:
 # ══════════════════════════════════════════════════════════════════════════════
 # TAB 3 — MY COLLECTION
 # ══════════════════════════════════════════════════════════════════════════════
+
+@st.fragment
+def collection_browser(records, placeholder_b64):
+    # ── Controls ──────────────────────────────────────────────────
+    search_query = st.text_input(
+        "Search collection",
+        placeholder="e.g. pothos, lemon lime...",
+        key="collection_search"
+    )
+    sort_option = st.radio(
+        "Sort by",
+        options=["Date Added (Newest)", "Date Added (Oldest)", "Name (A–Z)", "Name (Z–A)"],
+        key="collection_sort",
+        index=0
+    )
+
+    # ── Sort logic ────────────────────────────────────────────────
+    if sort_option == "Name (A–Z)":
+        records.sort(key=lambda r: (r.get("fields", {}).get("Nickname") or r.get("fields", {}).get("Species", "")).lower())
+    elif sort_option == "Name (Z–A)":
+        records.sort(key=lambda r: (r.get("fields", {}).get("Nickname") or r.get("fields", {}).get("Species", "")).lower(), reverse=True)
+    elif sort_option == "Date Added (Newest)":
+        records.sort(key=lambda r: r.get("createdTime", ""), reverse=True)
+    elif sort_option == "Date Added (Oldest)":
+        records.sort(key=lambda r: r.get("createdTime", ""))
+
+    # ── Build tile data ───────────────────────────────────────────
+    tiles = []
+    for record in records:
+        f = record.get("fields", {})
+        species_raw_val = f.get("Species", "")
+        species_raw = species_raw_val if isinstance(species_raw_val, str) else ""
+        common = f.get("Nickname") or species_raw or "Unknown Plant"
+        sp = fetch_species(common)
+        photo_url = (f.get("Specimen Photo") or [{}])[0].get("url", "")
+        tiles.append({
+            "record": record,
+            "f": f,
+            "common": common,
+            "sp": sp,
+            "photo_url": photo_url,
+        })
+
+    if search_query:
+        tiles = [t for t in tiles if search_query.lower() in t["common"].lower()]
+
+    count = len(tiles)
+    st.markdown(
+        f'<div class="collection-count">'
+        f'{count} plant{"s" if count != 1 else ""}</div>',
+        unsafe_allow_html=True
+    )
+
+    # ── Reserved card slot ────────────────────────────────────────
+    st.markdown('<div id="collection-card-anchor"></div>', unsafe_allow_html=True)
+    selected_id = st.session_state.get("selected_plant")
+    match = next((t for t in tiles if t["record"]["id"] == selected_id), None) if selected_id else None
+
+    if match:
+        f  = match["f"]
+        sp = match["sp"]
+        common = match["common"]
+        record_id = match["record"]["id"]
+        card_payload = {
+            "record_id":           record_id,
+            "common_name":         common,
+            "scientific_name":     sp.get("Scientific Name", f.get("Species", "")),
+            "cultivar":            sp.get("Cultivar", ""),
+            "care_notes":          sp.get("Care Notes", ""),
+            "sun":                 sp.get("Sunlight", f.get("Lighting", "")),
+            "water":               sp.get("Water", ""),
+            "cycle":               sp.get("Cycle", f.get("Plant Age", "")),
+            "photo_url":           match["photo_url"],
+            "fertilizer_baseline": sp.get("Fertilizer Baseline", f.get("Fertilizer Baseline", "")),
+            "local_authority":     sp.get("Local Authority", ""),
+            "expert_link":         sp.get("Expert Resource", ""),
+            "flowering":           sp.get("Flowering", False),
+        }
+        with st.container(border=True):
+            render_result_card(card_payload, show_added_confirm=False)
+        st.components.v1.html("""
+        <script>
+        setTimeout(function() {
+            var d = window.parent.document;
+            var anchor = d.getElementById('collection-card-anchor');
+            if (anchor) {
+                var wrapper = anchor.closest('[data-testid="stVerticalBlock"]')
+                    .querySelector('[data-testid="stVerticalBlockBorderWrapper"]');
+                if (wrapper) {
+                    wrapper.style.background = '#fcfaf5';
+                    wrapper.style.border = '1px solid #c8d8b0';
+                    wrapper.style.borderRadius = '6px';
+                }
+                anchor.scrollIntoView({behavior:'smooth'});
+            }
+        }, 400);
+        </script>
+        """, height=0)
+    else:
+        st.markdown("""
+        <div class="june-intro">
+        <p>Your collection lives here. Tap any plant to pull up its full care profile.</p>
+        <p>The emojis on each tile are your at-a-glance care indicators — sun and water needs,
+        always visible without clicking anything. Hover over them in the care card for a quick breakdown.</p>
+        <p>New plants get added in the <strong>Add a Plant</strong> tab.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # ── Tile grid ─────────────────────────────────────────────────
+    cols = st.columns(2)
+    for i, tile in enumerate(tiles):
+        with cols[i % 2]:
+            selected = st.session_state.get("selected_plant") == tile["record"]["id"]
+            tile_class = "plant-tile selected" if selected else "plant-tile"
+            img_src = tile["photo_url"] if tile["photo_url"] else f"data:image/png;base64,{placeholder_b64}"
+            sun_emoji, sun_tip     = normalize_sun(tile["sp"].get("Sunlight", ""))
+            water_emoji, water_tip = normalize_water(tile["sp"].get("Water", ""))
+            st.markdown(f"""
+            <div class="{tile_class}" id="tile-{tile['record']['id']}">
+                <img src="{img_src}" onerror="this.src='data:image/png;base64,{placeholder_b64}'">
+                <div class="plant-tile-label">
+                    <span title="{sun_tip}">{sun_emoji}</span>
+                    <span title="{water_tip}">{water_emoji}</span>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button(tile["common"], key=f"tile_{tile['record']['id']}", use_container_width=True):
+                st.session_state["selected_plant"] = tile["record"]["id"]
+                st.rerun(scope="fragment")
+
+
 with tab_collection:
 
     beta_users = fetch_beta_users()
@@ -1039,14 +1194,7 @@ with tab_collection:
             unsafe_allow_html=True
         )
     else:
-        default_user = st.session_state.get("active_user", beta_users[0])
-        default_index = beta_users.index(default_user) if default_user in beta_users else 0
-        selected_user = st.selectbox(
-            "Whose collection?",
-            options=beta_users,
-            index=default_index,
-            key="collection_user"
-        )
+        selected_user = display_name
 
         if selected_user:
             with st.spinner(f"Loading {selected_user}'s plants..."):
@@ -1059,129 +1207,4 @@ with tab_collection:
                     unsafe_allow_html=True
                 )
             else:
-                # ── Controls ──────────────────────────────────────────────────
-                search_query = st.text_input(
-                    "Search collection",
-                    placeholder="e.g. pothos, lemon lime...",
-                    key="collection_search"
-                )
-                sort_option = st.radio(
-                    "Sort by",
-                    options=["Date Added (Newest)", "Date Added (Oldest)", "Name (A–Z)", "Name (Z–A)"],
-                    key="collection_sort",
-                    index=0
-                )
-                if sort_option == "Name (A–Z)":
-                    records.sort(key=lambda r: (r.get("fields", {}).get("Nickname") or r.get("fields", {}).get("Species", "")).lower())
-                elif sort_option == "Name (Z–A)":
-                    records.sort(key=lambda r: (r.get("fields", {}).get("Nickname") or r.get("fields", {}).get("Species", "")).lower(), reverse=True)
-                elif sort_option == "Date Added (Newest)":
-                    records.sort(key=lambda r: r.get("createdTime", ""), reverse=True)
-                elif sort_option == "Date Added (Oldest)":
-                    records.sort(key=lambda r: r.get("createdTime", ""))
-
-                # ── Build tile data ───────────────────────────────────────────
-                tiles = []
-                for record in records:
-                    f = record.get("fields", {})
-                    species_raw_val = f.get("Species", "")
-                    species_raw = species_raw_val if isinstance(species_raw_val, str) else ""
-                    common = f.get("Nickname") or species_raw or "Unknown Plant"
-                    sp = fetch_species(common)
-                    photo_url = (f.get("Specimen Photo") or [{}])[0].get("url", "")
-                    tiles.append({
-                        "record": record,
-                        "f": f,
-                        "common": common,
-                        "sp": sp,
-                        "photo_url": photo_url,
-                    })
-
-                if search_query:
-                    tiles = [t for t in tiles if search_query.lower() in t["common"].lower()]
-
-                count = len(tiles)
-                st.markdown(
-                    f'<div class="collection-count">'
-                    f'{count} plant{"s" if count != 1 else ""}</div>',
-                    unsafe_allow_html=True
-                )
-
-                # ── Reserved card slot ────────────────────────────────────────
-                st.markdown('<div id="collection-card-anchor"></div>', unsafe_allow_html=True)
-                selected_id = st.session_state.get("selected_plant")
-                match = next((t for t in tiles if t["record"]["id"] == selected_id), None) if selected_id else None
-
-                if match:
-                    f  = match["f"]
-                    sp = match["sp"]
-                    common = match["common"]
-                    record_id = match["record"]["id"]
-                    card_payload = {
-                        "record_id":           record_id,
-                        "common_name":         common,
-                        "scientific_name":     sp.get("Scientific Name", f.get("Species", "")),
-                        "cultivar":            sp.get("Cultivar", ""),
-                        "care_notes":          sp.get("Care Notes", ""),
-                        "sun":                 sp.get("Sunlight", f.get("Lighting", "")),
-                        "water":               sp.get("Water", ""),
-                        "cycle":               sp.get("Cycle", f.get("Plant Age", "")),
-                        "photo_url":           match["photo_url"],
-                        "fertilizer_baseline": sp.get("Fertilizer Baseline", f.get("Fertilizer Baseline", "")),
-                        "local_authority":     sp.get("Local Authority", ""),
-                        "expert_link":         sp.get("Expert Resource", ""),
-                        "flowering":           sp.get("Flowering", False),
-                    }
-                    with st.container(border=True):
-                        render_result_card(card_payload, show_added_confirm=False)
-                    st.components.v1.html("""
-                    <script>
-                    setTimeout(function() {
-                        var d = window.parent.document;
-                        var anchor = d.getElementById('collection-card-anchor');
-                        if (anchor) {
-                            var wrapper = anchor.closest('[data-testid="stVerticalBlock"]')
-                                .querySelector('[data-testid="stVerticalBlockBorderWrapper"]');
-                            if (wrapper) {
-                                wrapper.style.background = '#fcfaf5';
-                                wrapper.style.border = '1px solid #c8d8b0';
-                                wrapper.style.borderRadius = '6px';
-                            }
-                            anchor.scrollIntoView({behavior:'smooth'});
-                        }
-                    }, 400);
-                    </script>
-                    """, height=0)
-                else:
-                    st.markdown("""
-                    <div class="june-intro">
-                    <p>Your collection lives here. Tap any plant to pull up its full care profile.</p>
-                    <p>The emojis on each tile are your at-a-glance care indicators — sun and water needs,
-                    always visible without clicking anything. Hover over them in the care card for a quick breakdown.</p>
-                    <p>New plants get added in the <strong>Add a Plant</strong> tab.</p>
-                    </div>
-                    """, unsafe_allow_html=True)
-
-                # ── Tile grid ─────────────────────────────────────────────────
-                cols = st.columns(2)
-                for i, tile in enumerate(tiles):
-                    with cols[i % 2]:
-                        selected = st.session_state.get("selected_plant") == tile["record"]["id"]
-                        tile_class = "plant-tile selected" if selected else "plant-tile"
-                        img_src = tile["photo_url"] if tile["photo_url"] else f"data:image/png;base64,{placeholder_b64}"
-                        sun_emoji, sun_tip     = normalize_sun(tile["sp"].get("Sunlight", ""))
-                        water_emoji, water_tip = normalize_water(tile["sp"].get("Water", ""))
-                        care_preview = ""
-                        if sun_emoji:
-                            care_preview += f'<span title="{sun_tip}">{sun_emoji}</span>'
-                        if water_emoji:
-                            care_preview += f'<span title="{water_tip}" style="margin-left:0.4rem">{water_emoji}</span>'
-                        st.markdown(f"""
-                        <div class="{tile_class}" id="tile-{tile['record']['id']}">
-                            <img src="{img_src}" onerror="this.src='data:image/png;base64,{placeholder_b64}'">
-                            <div class="plant-tile-label">{care_preview}</div>
-                        </div>
-                        """, unsafe_allow_html=True)
-                        if st.button(f"🌿 {tile['common']} →", key=f"tile_{tile['record']['id']}"):
-                            st.session_state["selected_plant"] = tile["record"]["id"]
-                            st.rerun()
+                collection_browser(records, placeholder_b64)

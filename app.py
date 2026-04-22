@@ -968,6 +968,7 @@ if "user_upserted" not in st.session_state:
     st.session_state["user_upserted"] = True
 
 # ─── ONBOARDING GATE ──────────────────────────────────────────────────────────
+fetch_beta_user_record.clear()
 user_record = fetch_beta_user_record(user_email)
 is_onboarded = user_record.get("fields", {}).get("Onboarded", False)
 

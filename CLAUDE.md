@@ -8,10 +8,10 @@ Persistent context for Claude Code sessions. Read this at session start before t
 
 ### Stack
 
-- **UI:** Streamlit 1.56.0 — `app.py` is the entire frontend
+- **UI:** Streamlit 1.45.1 (pinned) — `app.py` is the entire frontend
 - **AI:** Gemini 2.5 Flash (primary) → Gemini 2.5 Flash Lite → Gemini 2.0 Flash (failover), called from `plant_intake.py`
 - **Database:** Airtable (Base ID: `appGiJDkp7jv7qbkR`)
-- **Auth:** Auth0 via Streamlit's built-in `st.login()` / `st.user` — requires Authlib>=1.3.2
+- **Auth:** Auth0 via Streamlit's built-in `st.login()` / `st.user` — requires Authlib==1.4.0
 - **Image search:** Serper.dev (Pass 0) → Wikimedia Commons (Pass 1–2) → placeholder
 - **Automation:** Make.com (us2 region) — 2 scenarios, free tier
 - **Hosting:** Railway — `blue-moon-botanics-production.up.railway.app`
@@ -37,9 +37,18 @@ Persistent context for Claude Code sessions. Read this at session start before t
 |-------|---------|
 | Species Library | Shared species data — populated on every new intake. `Enrichment JSON` field (long text) holds the Gemini-generated enrichment blob written by `species_enrichment.py`. |
 | Specimen Registry | Per-user plant records — `Beta User` field for separation |
-| Beta Users | Auth users — `Name` and `Email` fields |
+| Beta Users | Auth users — see field list below |
 | History | Event log |
 | Location | Linked location records |
+
+**Beta Users fields:**
+
+| Field | Type | Notes |
+|-------|------|-------|
+| Email | Single line text | From identity provider — primary key |
+| Name | Single line text | Display name — must match `st.user.name` for `fetch_collection()` to work |
+| ZIP Code | Single line text | Optional — set at onboarding, drives `get_location()` |
+| Onboarded | Checkbox | True once user completes onboarding screen. Gate key. |
 
 ### Auth
 
@@ -57,18 +66,42 @@ Persistent context for Claude Code sessions. Read this at session start before t
   server_metadata_url = "https://{domain}/.well-known/openid-configuration"
   ```
 - Provider key is `[auth.auth0]` — NOT `[auth.providers.auth0]`
-- `display_name = st.user.name or user_email` — **must match the `Name` field in Beta Users** for `fetch_collection()` to return results
-- `upsert_user()` runs once per session via `st.session_state["user_upserted"]` guard, placed just before the tabs block
+- `display_name` reads from `st.session_state.get("display_name")` first, then `st.user.name`, then `user_email` — session state is set during onboarding so edited names persist immediately
+- `upsert_user()` runs once per session via `st.session_state["user_upserted"]` guard
+- `st.logout()` takes **no arguments** — Streamlit 1.45.1 does not support a custom label
+- Auth0 **Allowed Logout URLs** must include `https://blue-moon-botanics-production.up.railway.app/oauth2callback`
+
+### Onboarding flow
+
+Built and live. Runs between `# ─── USER UPSERT` and `# ─── SIDEBAR`.
+
+- Gate checks `st.session_state["is_onboarded"]` first (fast path), then falls through to `fetch_beta_user_record()` if not set
+- New user (no `Onboarded` flag in Airtable) sees the onboarding screen — June intro card, display name field (pre-filled from Auth0), optional ZIP Code field
+- On submit: clears cache, re-fetches record to get live `record_id`, PATCHes `Name` + `ZIP Code` + `Onboarded=True`, sets session state, reruns
+- `complete_onboarding(record_id, name, zip_code)` — PATCH helper, raises on HTTP errors
+- Returning users skip entirely once `Onboarded=True` is in their Beta Users record
+
+### Sidebar
+
+Built and live. Renders via `with st.sidebar:` after the onboarding gate.
+
+- Avatar circle (first initial, brand green), display name, email
+- "Collecting since [Month Year]" — from `createdTime` on Beta Users record
+- Plant count from `fetch_collection(display_name)`
+- Environmental Monitoring placeholder (coming soon)
+- `st.logout()` sign-out button wrapped in `.btn-ghost`
 
 ### Conventions
 
 - **CSS inside f-strings needs doubled braces** — `{{` and `}}` everywhere. Catch at write time.
 - Use **anchor phrases** (e.g. `# ─── AUTH GATE`) to locate edit targets — more reliable than line numbers
 - `get_config(key)` checks env vars first, then `config.py` — works locally and on Railway
-- `@st.cache_data` TTLs: `fetch_beta_users` 600s, `fetch_collection` 300s, `fetch_species` 3600s
+- `@st.cache_data` TTLs: `fetch_beta_users` 600s, `fetch_collection` 300s, `fetch_species` 3600s, `fetch_beta_user_record` 600s
 - After a successful photo update, call `fetch_collection.clear()` to bust the cache immediately
 - `collection_browser()` is wrapped in `@st.fragment` — use `st.rerun(scope="fragment")` for tile interactions inside it
-- `requirements.txt` is UTF-16 encoded — append new packages via bash, don't overwrite
+- `requirements.txt` is UTF-16 encoded — modify via Python (`open(..., encoding='utf-16')`), never overwrite directly
+- `requirements.txt` is fully unpinned except `Authlib==1.4.0` and `streamlit==1.45.1`
+- `get_location()` reads `ZIP Code` from Beta Users via `fetch_beta_user_record()` — no longer reads from local `user_settings.json`
 
 ### Railway env vars
 
@@ -85,6 +118,10 @@ Blue Moon Botanics (BMB) is a plant care app for hobbyist plant collectors. User
 ### Who it's for
 
 Hobbyist plant collectors. Mobile is the primary intake device — design and test for portrait viewport first.
+
+### Beta users
+
+Justin Riley is the only seeded record. All new users (including Rob) onboard natively through the Auth0 + onboarding flow.
 
 ### June
 
@@ -120,22 +157,6 @@ For species already in the library: `add_existing_to_collection()` bypasses Gemi
 - **Primary button:** filled `#4CBB17`
 - **Ghost button** (`.btn-ghost`): cream fill, green border — camera button only
 - No em dashes in copy. Hyphens or new sentences instead.
-
-### User profile data model
-
-Stored in the Beta Users Airtable table:
-
-| Field | Notes |
-|-------|-------|
-| Email | From identity provider — primary key |
-| Name | Display name — must match `st.user.name` for `fetch_collection()` to work |
-| Zip code | Optional at onboarding — drives localized care guidance and cutting exchange |
-| Cutting availability | Flag for the offer side of the cutting exchange feature |
-
-**New vs. returning user flow (not yet built):**
-1. Login → check if email exists in Beta Users
-2. New user → onboarding screen: choose display name, optional zip → write record → enter app
-3. Returning user → pull existing record → enter app directly
 
 ### Cutting exchange (backlog — not yet designed)
 

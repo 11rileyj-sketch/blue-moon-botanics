@@ -763,8 +763,8 @@ def complete_onboarding(record_id, name, zip_code):
         fields["ZIP_Code"] = zip_code
     try:
         requests.patch(url, headers=airtable_headers(), json={"fields": fields})
-    except:
-        pass
+    except Exception as e:
+        st.error(f"Onboarding failed: {e}")
 
 def update_specimen_photo(record_id, plant_name, common_name, scientific_name):
     """Runs image search and PATCHes the Specimen Registry record with the new photo URL."""
@@ -996,6 +996,8 @@ if not is_onboarded:
         if not submitted_name.strip():
             st.error("Please enter a display name to continue.")
         else:
+            fetch_beta_user_record.clear()
+            user_record = fetch_beta_user_record(user_email)
             record_id = user_record.get("id", "")
             complete_onboarding(record_id, submitted_name.strip(), submitted_zip.strip())
             st.session_state["display_name"] = submitted_name.strip()

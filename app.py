@@ -1041,7 +1041,7 @@ with st.sidebar:
 
     with st.container():
         st.markdown('<div class="btn-ghost">', unsafe_allow_html=True)
-        st.logout("Sign out")
+        st.logout()
         st.markdown('</div>', unsafe_allow_html=True)
 
 # ─── HEX DIVIDER ──────────────────────────────────────────────────────────────

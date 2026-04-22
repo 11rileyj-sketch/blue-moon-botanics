@@ -968,8 +968,10 @@ if "user_upserted" not in st.session_state:
     st.session_state["user_upserted"] = True
 
 # ─── ONBOARDING GATE ──────────────────────────────────────────────────────────
-user_record = fetch_beta_user_record(user_email)
-is_onboarded = user_record.get("fields", {}).get("Onboarded", False)
+is_onboarded = st.session_state.get("is_onboarded", False)
+if not is_onboarded:
+    user_record = fetch_beta_user_record(user_email)
+    is_onboarded = user_record.get("fields", {}).get("Onboarded", False)
 
 if not is_onboarded:
     st.markdown('<div class="onboarding-wrap">', unsafe_allow_html=True)
@@ -1007,6 +1009,7 @@ if not is_onboarded:
             try:
                 complete_onboarding(record_id, submitted_name.strip(), submitted_zip.strip())
                 st.session_state["display_name"] = submitted_name.strip()
+                st.session_state["is_onboarded"] = True
                 fetch_beta_user_record.clear()
                 st.rerun()
             except Exception as e:

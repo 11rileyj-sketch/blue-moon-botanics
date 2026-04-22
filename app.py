@@ -717,8 +717,6 @@ def fetch_beta_user_record(email):
     except:
         return {}
 
-location = get_location()
-
 SPECIES_TABLE = "Species Library"
 
 @st.cache_data(ttl=3600)
@@ -1084,6 +1082,8 @@ with tab_june:
 # TAB 2 — ADD A PLANT (manual entry)
 # ══════════════════════════════════════════════════════════════════════════════
 with tab_manual:
+
+    location = get_location()
 
     # ── Who's adding this plant? ──────────────────────────────────────────────
     intake_user = display_name

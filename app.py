@@ -1177,7 +1177,7 @@ with tab_manual:
         run_mode = 'cache' if cache_btn else 'full' if fresh_btn else None
 
     else:
-        run_btn  = st.button("Add to My Collection →", key="run_intake")
+        run_btn  = st.button("Search for Plant →", key="run_intake")
         run_mode = 'full' if run_btn else None
 
     if run_mode and plant_name.strip():

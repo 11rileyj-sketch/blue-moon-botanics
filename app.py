@@ -1053,7 +1053,7 @@ with st.sidebar:
     _auth0_client_id = get_config("AUTH0_CLIENT_ID")
     _return_to       = urllib.parse.quote("https://blue-moon-botanics-production.up.railway.app", safe="")
     _logout_url      = f"https://{_auth0_domain}/v2/logout?client_id={_auth0_client_id}&returnTo={_return_to}"
-    st.link_button("Sign out", _logout_url, use_container_width=True)
+    st.markdown(f'<a href="{_logout_url}" target="_self" class="btn-ghost" style="display:block;text-align:center;text-decoration:none;padding:0.4rem 0.8rem;">Sign out</a>', unsafe_allow_html=True)
 
 # ─── HEX DIVIDER ──────────────────────────────────────────────────────────────
 st.markdown('<div class="bmb-hex-divider"></div>', unsafe_allow_html=True)

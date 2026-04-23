@@ -18,12 +18,6 @@ st.set_page_config(
     layout="centered"
 )
 
-# ─── DEBUG: rerun tracing — remove before merge ───────────────────────────────
-import traceback
-print("RERUN TRIGGERED", flush=True)
-traceback.print_stack()
-# ──────────────────────────────────────────────────────────────────────────────
-
 # ─── AUTH GATE ────────────────────────────────────────────────────────────────
 if not st.user.is_logged_in:
     st.login("auth0")
@@ -1021,7 +1015,7 @@ if not is_onboarded:
     st.markdown('</div>', unsafe_allow_html=True)
     st.stop()
 
-# ─── SIDEBAR (st.logout commented out for rerun diagnostic) ───────────────────
+# ─── SIDEBAR ──────────────────────────────────────────────────────────────────
 with st.sidebar:
     initial = (display_name[0] if display_name else "?").upper()
     collection_records = fetch_collection(display_name)
@@ -1055,10 +1049,13 @@ with st.sidebar:
 
     st.divider()
 
-    # with st.container():
-    #     st.markdown('<div class="btn-ghost">', unsafe_allow_html=True)
-    #     st.logout()
-    #     st.markdown('</div>', unsafe_allow_html=True)
+    @st.fragment
+    def _logout_btn():
+        st.markdown('<div class="btn-ghost">', unsafe_allow_html=True)
+        st.logout()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    _logout_btn()
 
 # ─── HEX DIVIDER ──────────────────────────────────────────────────────────────
 st.markdown('<div class="bmb-hex-divider"></div>', unsafe_allow_html=True)

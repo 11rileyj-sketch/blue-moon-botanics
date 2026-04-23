@@ -844,6 +844,20 @@ def inject_emojis(care_notes, sun, water):
         out.append(line)
     return '<br>'.join(out)
 
+def format_scientific_name(name: str) -> str:
+    if not name:
+        return name
+    if "'" in name:
+        species_part, cultivar_part = name.split("'", 1)
+        cultivar = cultivar_part.strip().rstrip("'")
+        cultivar_formatted = cultivar[0].upper() + cultivar[1:].lower() if cultivar else ""
+        species_formatted = species_part.strip()
+        species_formatted = species_formatted[0].upper() + species_formatted[1:]
+        return f"<em>{species_formatted}</em> '{cultivar_formatted}'"
+    else:
+        name = name.strip()
+        return f"<em>{name[0].upper() + name[1:]}</em>"
+
 def render_result_card(payload, show_added_confirm=False, compact=False):
     """Renders the full plant care card. Used by both Manual Entry and My Collection."""
     common_name  = payload.get("common_name", "")
@@ -893,7 +907,7 @@ def render_result_card(payload, show_added_confirm=False, compact=False):
             notes_html = inject_emojis(care_notes, sun_emoji, water_emoji) if (not compact and care_notes) else ""
             st.markdown(f"""
             <div class="result-common">{common_name}</div>
-            <div class="result-scientific">{scientific}</div>
+            <div class="result-scientific">{format_scientific_name(scientific)}</div>
             <div class="stat-row">{pills_html}</div>
             {f'<div class="care-notes">{notes_html}</div>' if notes_html else ""}
             """, unsafe_allow_html=True)

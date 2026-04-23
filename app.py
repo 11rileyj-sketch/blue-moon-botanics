@@ -23,6 +23,10 @@ if not st.user.is_logged_in:
     st.login("auth0")
     st.stop()
 
+if st.session_state.get("_sign_out"):
+    st.logout()
+    st.stop()
+
 user_email = st.user.email
 display_name = st.session_state.get("display_name") or st.user.name or user_email
 
@@ -1049,11 +1053,9 @@ with st.sidebar:
 
     st.divider()
 
-    _auth0_domain    = get_config("AUTH0_DOMAIN")
-    _auth0_client_id = get_config("AUTH0_CLIENT_ID")
-    _return_to       = urllib.parse.quote("https://blue-moon-botanics-production.up.railway.app", safe="")
-    _logout_url      = f"https://{_auth0_domain}/v2/logout?client_id={_auth0_client_id}&returnTo={_return_to}"
-    st.markdown(f'<a href="{_logout_url}" target="_self" class="btn-ghost" style="display:block;text-align:center;text-decoration:none;padding:0.4rem 0.8rem;">Sign out</a>', unsafe_allow_html=True)
+    if st.button("Sign out", key="sidebar_signout", use_container_width=True):
+        st.session_state["_sign_out"] = True
+        st.rerun()
 
 # ─── HEX DIVIDER ──────────────────────────────────────────────────────────────
 st.markdown('<div class="bmb-hex-divider"></div>', unsafe_allow_html=True)

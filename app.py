@@ -502,7 +502,7 @@ st.markdown(f"""
 
   /* ── Sidebar profile panel ───────────────────────────────────── */
   [data-testid="stSidebar"] {{
-      background-color: rgba(252, 250, 245, 0.98);
+      background-color: rgba(252, 250, 245, 0.50);
       border-right: 1px solid #c8d8b0;
   }}
   [data-testid="stSidebar"] .block-container {{

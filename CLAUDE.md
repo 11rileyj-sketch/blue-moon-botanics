@@ -69,7 +69,8 @@ Persistent context for Claude Code sessions. Read this at session start before t
 - `display_name` reads from `st.session_state.get("display_name")` first, then `st.user.name`, then `user_email` — session state is set during onboarding so edited names persist immediately
 - `upsert_user()` runs once per session via `st.session_state["user_upserted"]` guard
 - `st.logout()` takes **no arguments** — Streamlit 1.45.1 does not support a custom label
-- Auth0 **Allowed Logout URLs** must include `https://blue-moon-botanics-production.up.railway.app/oauth2callback`
+- **Do not render `st.logout()` as a persistent widget in the sidebar** — it triggers a full-script rerun on every render, causing an infinite loop. Use the `_sign_out` flag pattern instead: a plain `st.button("Sign out")` sets `st.session_state["_sign_out"] = True` and calls `st.rerun()`. At the top of the script (right after the auth gate), check `if st.session_state.get("_sign_out"): st.logout(); st.stop()`.
+- Auth0 **Allowed Logout URLs** configured: `http://localhost:8501/`, `https://blue-moon-botanics-production.up.railway.app/`, `https://blue-moon-botanics-production.up.railway.app/oauth2callback`
 
 ### Onboarding flow
 
@@ -89,7 +90,7 @@ Built and live. Renders via `with st.sidebar:` after the onboarding gate.
 - "Collecting since [Month Year]" — from `createdTime` on Beta Users record
 - Plant count from `fetch_collection(display_name)`
 - Environmental Monitoring placeholder (coming soon)
-- `st.logout()` sign-out button wrapped in `.btn-ghost`
+- Sign-out is a plain `st.button("Sign out")` — sets `st.session_state["_sign_out"]` flag, NOT a direct `st.logout()` call (see Auth section for why)
 
 ### Conventions
 

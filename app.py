@@ -679,7 +679,6 @@ def fetch_beta_users():
     try:
         r = requests.get(url, headers=airtable_headers(), params=params)
         if r.status_code != 200:
-            st.session_state["_beta_user_error"] = f"Airtable {r.status_code}: {r.text[:120]}"
             return []
         users = []
         for rec in r.json().get("records", []):
@@ -687,8 +686,7 @@ def fetch_beta_users():
             if name:
                 users.append(name)
         return sorted(users)
-    except Exception as e:
-        st.session_state["_beta_user_error"] = str(e)
+    except Exception:
         return []
 
 @st.cache_data(ttl=300)

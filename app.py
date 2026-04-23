@@ -18,6 +18,12 @@ st.set_page_config(
     layout="centered"
 )
 
+# ─── DEBUG: rerun tracing — remove before merge ───────────────────────────────
+import traceback
+print("RERUN TRIGGERED", flush=True)
+traceback.print_stack()
+# ──────────────────────────────────────────────────────────────────────────────
+
 # ─── AUTH GATE ────────────────────────────────────────────────────────────────
 if not st.user.is_logged_in:
     st.login("auth0")

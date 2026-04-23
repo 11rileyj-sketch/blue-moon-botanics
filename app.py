@@ -1021,44 +1021,44 @@ if not is_onboarded:
     st.markdown('</div>', unsafe_allow_html=True)
     st.stop()
 
-# ─── SIDEBAR (disabled for rerun diagnostic — re-enable after testing) ─────────
-# with st.sidebar:
-#     initial = (display_name[0] if display_name else "?").upper()
-#     collection_records = fetch_collection(display_name)
-#     plant_count = len(collection_records)
-#
-#     user_record = fetch_beta_user_record(user_email)
-#     created_raw = user_record.get("createdTime", "")
-#     collecting_since = ""
-#     if created_raw:
-#         try:
-#             dt = datetime.strptime(created_raw, "%Y-%m-%dT%H:%M:%S.%fZ")
-#             collecting_since = dt.strftime("%B %Y")
-#         except ValueError:
-#             pass
-#
-#     st.markdown(f"""
-#     <div class="sidebar-avatar">{initial}</div>
-#     <div class="sidebar-name">{display_name}</div>
-#     <div class="sidebar-email">{user_email}</div>
-#     """, unsafe_allow_html=True)
-#
-#     st.divider()
-#
-#     if collecting_since:
-#         st.markdown(f'<div class="sidebar-stat">🌱 Collecting since {collecting_since}</div>', unsafe_allow_html=True)
-#     st.markdown(f'<div class="sidebar-stat">🪴 {plant_count} plant{"s" if plant_count != 1 else ""}</div>', unsafe_allow_html=True)
-#
-#     st.divider()
-#
-#     st.markdown('<div class="sidebar-coming-soon">🌡️ Environmental Monitoring — coming soon</div>', unsafe_allow_html=True)
-#
-#     st.divider()
-#
-#     with st.container():
-#         st.markdown('<div class="btn-ghost">', unsafe_allow_html=True)
-#         st.logout()
-#         st.markdown('</div>', unsafe_allow_html=True)
+# ─── SIDEBAR (st.logout commented out for rerun diagnostic) ───────────────────
+with st.sidebar:
+    initial = (display_name[0] if display_name else "?").upper()
+    collection_records = fetch_collection(display_name)
+    plant_count = len(collection_records)
+
+    user_record = fetch_beta_user_record(user_email)
+    created_raw = user_record.get("createdTime", "")
+    collecting_since = ""
+    if created_raw:
+        try:
+            dt = datetime.strptime(created_raw, "%Y-%m-%dT%H:%M:%S.%fZ")
+            collecting_since = dt.strftime("%B %Y")
+        except ValueError:
+            pass
+
+    st.markdown(f"""
+    <div class="sidebar-avatar">{initial}</div>
+    <div class="sidebar-name">{display_name}</div>
+    <div class="sidebar-email">{user_email}</div>
+    """, unsafe_allow_html=True)
+
+    st.divider()
+
+    if collecting_since:
+        st.markdown(f'<div class="sidebar-stat">🌱 Collecting since {collecting_since}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="sidebar-stat">🪴 {plant_count} plant{"s" if plant_count != 1 else ""}</div>', unsafe_allow_html=True)
+
+    st.divider()
+
+    st.markdown('<div class="sidebar-coming-soon">🌡️ Environmental Monitoring — coming soon</div>', unsafe_allow_html=True)
+
+    st.divider()
+
+    # with st.container():
+    #     st.markdown('<div class="btn-ghost">', unsafe_allow_html=True)
+    #     st.logout()
+    #     st.markdown('</div>', unsafe_allow_html=True)
 
 # ─── HEX DIVIDER ──────────────────────────────────────────────────────────────
 st.markdown('<div class="bmb-hex-divider"></div>', unsafe_allow_html=True)

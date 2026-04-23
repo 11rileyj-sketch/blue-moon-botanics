@@ -33,7 +33,11 @@ GEMINI_API_KEY   = _get_config("GEMINI_API_KEY")
 SPECIES_TABLE    = "Species Library"
 ENRICHMENT_FIELD = "Enrichment JSON"
 
-client = genai.Client(api_key=GEMINI_API_KEY)
+client = genai.Client(
+    vertexai=True,
+    project='gen-lang-client-0299334879',
+    location='us-central1'
+)
 
 CANDIDATE_MODELS = [
     "gemini-2.5-flash",

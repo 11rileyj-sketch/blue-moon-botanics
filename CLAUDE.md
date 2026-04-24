@@ -27,7 +27,8 @@ Persistent context for Claude Code sessions. Read this at session start before t
 | `assets.py` | Serves `bg_tile.png`, `botanicslogo.png`, `plant_placeholder.png` as base64 |
 | `about.md` | About page content — read by `app.py` at runtime |
 | `quotes.json` | Rotating quotes shown during Gemini intake |
-| `species_enrichment.py` | Standalone batch script — enriches Species Library records via Gemini. Local-run only, never deployed to Railway. |
+| `species_enrichment.py` | Standalone batch enrichment script — two-pass (scientific + cultural), Vertex AI backend. Local-run only, never deployed to Railway. |
+| `BMB_ENRICHMENT_PROMPTS.md` | Source of truth for `SCIENTIFIC_PROMPT` and `CULTURAL_PROMPT` used by `species_enrichment.py`. Edit prompts here, then sync to the script. |
 | `config.py` | Live API keys — **never push, never pass as context, already in .gitignore** |
 | `.streamlit/secrets.toml` | Auth0 credentials + cookie secret — **never push** |
 
@@ -35,9 +36,10 @@ Persistent context for Claude Code sessions. Read this at session start before t
 
 | Table | Purpose |
 |-------|---------|
-| Species Library | Shared species data — populated on every new intake. `Enrichment JSON` field (long text) holds the Gemini-generated enrichment blob written by `species_enrichment.py`. |
+| Species Library | Shared species data — populated on every new intake. `Enrichment JSON` field (long text) holds the scientific enrichment blob written by `species_enrichment.py`. |
 | Specimen Registry | Per-user plant records — `Beta User` field for separation |
 | Beta Users | Auth users — see field list below |
+| Cultural Mentions | Quarantined cultural/folkloric data — every row written as `Pending`, requires human review before promotion. **Table not yet created — needed before cultural pass of `species_enrichment.py` can run.** |
 | History | Event log |
 | Location | Linked location records |
 
@@ -103,6 +105,22 @@ Built and live. Renders via `with st.sidebar:` after the onboarding gate.
 - `requirements.txt` is UTF-16 encoded — modify via Python (`open(..., encoding='utf-16')`), never overwrite directly
 - `requirements.txt` is fully unpinned except `Authlib==1.4.0` and `streamlit==1.45.1`
 - `get_location()` reads `ZIP Code` from Beta Users via `fetch_beta_user_record()` — no longer reads from local `user_settings.json`
+- `format_scientific_name(name)` — formats scientific names for display. Wraps species in `<em>` tags (not `*...*` — scientific name renders inside an HTML div in `st.markdown`, so markdown italics don't apply). Title-cases cultivar names and separates them with single quotes.
+
+### Enrichment pipeline
+
+`species_enrichment.py` runs locally against Vertex AI (project `gen-lang-client-0299334879`, `us-central1`). Requires `GOOGLE_APPLICATION_CREDENTIALS` pointing at `bmb-enrichment-key.json` (gitignored).
+
+**Two-pass architecture:**
+- **Pass A (scientific)** — calls `SCIENTIFIC_PROMPT`, writes JSON blob to `Enrichment JSON` on Species Library. Must succeed before Pass B runs.
+- **Pass B (cultural)** — calls `CULTURAL_PROMPT`, writes each mention to Cultural Mentions table with `Status: Pending`. Failure is non-blocking; scientific blob is already saved.
+
+**Before running a batch:**
+1. Create the Cultural Mentions table in Airtable (see `BMB_ENRICHMENT_BRIEF.md` for schema)
+2. Run test sequence from `BMB_ENRICHMENT_PROMPTS.md` (Monstera deliciosa single-species, stress tests, empty state)
+3. Only then run against full seed list
+
+**Prompt source:** `BMB_ENRICHMENT_PROMPTS.md` — edit prompts there, sync to `species_enrichment.py`. Do not edit prompts directly in the script.
 
 ### Railway env vars
 
